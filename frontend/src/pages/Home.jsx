@@ -28,7 +28,7 @@ export default function Home({ onItemAdd, onNavigate, user }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch('/api/products');
         const data = await response.json();
         if (data.success) setProducts(data.products);
       } catch (error) {
@@ -41,7 +41,7 @@ export default function Home({ onItemAdd, onNavigate, user }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/reviews');
+        const response = await fetch('/api/reviews');
         const data = await response.json();
         if (data.success && data.reviews.length > 0) setReviews(data.reviews);
       } catch (error) {

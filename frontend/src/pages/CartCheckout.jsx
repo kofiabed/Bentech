@@ -69,7 +69,7 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
 
   const createOrder = async (extra = {}) => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/orders', {
+    const response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(buildOrderPayload(extra))
@@ -83,7 +83,7 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
     e.preventDefault();
     if (paymentMethod === 'card') {
       try {
-        const response = await fetch('http://localhost:5000/api/payment/initialize', {
+        const response = await fetch('/api/payment/initialize', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: user?.email || 'customer@technova.gh', amount: totalOrderAmount })

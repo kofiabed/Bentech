@@ -47,7 +47,7 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
 
   const fetchOrders = useCallback(async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/orders', {
+    const response = await fetch('/api/orders', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await response.json();
@@ -59,7 +59,7 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
 
   const fetchReviews = useCallback(async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/reviews', {
+        const response = await fetch('/api/reviews', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await response.json();
@@ -104,7 +104,7 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
     setIsSaving(true);
     try {
       const savedToken = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/auth/profile/update', {
+      const response = await fetch('/api/auth/profile/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
     event.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/reviews', {
+      const response = await fetch('/api/reviews', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

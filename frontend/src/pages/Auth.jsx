@@ -31,7 +31,7 @@ export default function Auth({ onAuthSuccess }) {
     setIsLoading(true);
     setErrorMessage('');
     try {
-      const res = await fetch('http://localhost:5000/api/auth/google', {
+      const res = await fetch('/api/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: response.credential })
@@ -70,7 +70,7 @@ export default function Auth({ onAuthSuccess }) {
     const endpoint = authMode === 'login' ? 'login' : 'register';
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+        const response = await fetch(`/api/auth/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

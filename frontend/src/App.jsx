@@ -45,7 +45,7 @@ export default function App() {
       const savedToken = localStorage.getItem('token');
       if (!savedToken) return;
       try {
-        const response = await fetch('http://localhost:5000/api/auth/me', {
+        const response = await fetch('/api/auth/me', {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${savedToken}` }
         });

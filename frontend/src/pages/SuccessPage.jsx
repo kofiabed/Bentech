@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 export default function SuccessPage({ onNavigate, onClearCart }) {
   const getReferenceFromUrl = () => new URLSearchParams(window.location.search).get('reference') || '';
