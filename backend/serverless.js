@@ -56,13 +56,11 @@ async function connectDB() {
     return cached.conn;
   }
   if (!cached.promise) {
-    // Use bufferCommands: true (default) to allow Mongoose to queue operations
-    // while the initial connection is being established in serverless
+    console.log('Connecting to MongoDB...');
     cached.promise = mongoose.connect(MONGO_URI).then(async (m) => {
       console.log('Database connected (serverless)');
-      // Run auto-seed after connection is fully established
       try {
-        await autoSeed(m);
+        await autoSeed();
       } catch (seedErr) {
         console.error('Auto-seed error:', seedErr.message);
       }
@@ -75,14 +73,13 @@ async function connectDB() {
 
 // Middleware that ensures DB is connected before handling any API request
 app.use(async (req, res, next) => {
-  // Skip DB check for non-API routes
   if (!req.path.startsWith('/api/')) return next();
   try {
     await connectDB();
     next();
   } catch (err) {
     console.error('DB connection middleware error:', err.message);
-    res.status(503).json({ success: false, message: 'Database connection unavailable. Please try again.' });
+    res.status(503).json({ success: false, message: `Database connection unavailable: ${err.message}` });
   }
 });
 
@@ -94,7 +91,6 @@ async function autoSeed() {
     const User = require('./models/userModel');
     const Product = require('./models/productModel');
 
-    // Seed products (only if collection is empty)
     const productCount = await Product.countDocuments();
     if (productCount === 0) {
       console.log('🌱 Seeding products into database...');
@@ -119,7 +115,6 @@ async function autoSeed() {
       console.log(`✅ Products already exist (${productCount}), skipping seed.`);
     }
 
-    // Seed admin user
     const adminExists = await User.findOne({ email: 'ben@technova.gh' }).select('+password');
     if (!adminExists) {
       console.log('🌱 Seeding admin user...');
