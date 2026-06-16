@@ -9,136 +9,6 @@ const generateToken = (id) => {
   });
 };
 
-exports.register = async (req, res, next) => {
-  try {
-    const { name, email, password, role } = req.body;
-    const emailLower = email.toLowerCase();
-    if (role === 'admin' || role === 'staff') {
-      return res.status(403).json({
-        success: false,
-        message: 'Security Restriction: Elevated clearance nodes cannot be provisioned via public registration channels.'
-      });
-    }
-
-    const userExists = await User.findOne({ email: emailLower });
-    if (userExists) {
-      return res.status(400).json({ success: false, message: 'User database node already mapped.' });
-    }
-
-    const user = await User.create({
-      name: name || emailLower.split('@')[0],
-      email: emailLower,
-      password: password || Math.random().toString(36).slice(-8),
-      role: 'customer'
-    });
-
-    res.status(201).json({
-      success: true,
-      token: generateToken(user._id),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
-  } catch (error) {
-    if (typeof next === 'function') next(error);
-    else {
-      console.error("💥 Core Engine Intercepted Unhandled Exception:", error);
-      res.status(500).json({ success: false, message: error.message });
-    }
-  }
-};
-
-exports.login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const emailLower = email.toLowerCase();
-    const user = await User.findOne({ email: emailLower }).select('+password');
-    if (!user || !(await user.matchPasswords(password))) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid server authentication credentials. Re-evaluate parameters.'
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      token: generateToken(user._id),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
-  } catch (error) {
-    if (typeof next === 'function') next(error);
-    else {
-      console.error("💥 Core Engine Intercepted Unhandled Exception:", error);
-      res.status(500).json({ success: false, message: error.message });
-    }
-  }
-};
-
-exports.googleAuth = async (req, res, next) => {
-  try {
-    const { credential } = req.body;
-    const googleClientId = process.env.GOOGLE_CLIENT_ID;
-
-    if (!googleClientId) {
-      return res.status(500).json({
-        success: false,
-        message: 'Google OAuth is not configured on the server.'
-      });
-    }
-
-    const tokenInfo = await axios.post(
-      'https://oauth2.googleapis.com/tokeninfo',
-      null,
-      { params: { id_token: credential, client_id: googleClientId } }
-    );
-
-    const { email, email_verified, name, picture } = tokenInfo.data;
-
-    if (!email_verified) {
-      return res.status(401).json({
-        success: false,
-        message: 'Google account email is not verified.'
-      });
-    }
-
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = await User.create({
-        name,
-        email,
-        password: undefined,
-        role: 'customer'
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      token: generateToken(user._id),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        image: picture || user.image
-      }
-    });
-  } catch (error) {
-    if (typeof next === 'function') next(error);
-    else {
-      console.error("💥 Core Engine Intercepted Unhandled Exception:", error);
-      res.status(500).json({ success: false, message: error.response?.data?.error_description || error.message || 'Google authentication failed.' });
-    }
-  }
-};
-
 // @desc    Register Account Profile Node (Public Interface Client Creation)
 // @route   POST /api/auth/register
 exports.register = async (req, res, next) => {
@@ -162,7 +32,7 @@ exports.register = async (req, res, next) => {
 
     // Initialize the client record (Pre-save hashing middleware executes implicitly inside userModel)
     const user = await User.create({
-      name,
+      name: name || emailLower.split('@')[0],
       email: emailLower,
       password,
       role: 'customer' // Enforce total safety by defaulting exclusively to basic customer tiers
@@ -241,13 +111,20 @@ exports.googleAuth = async (req, res, next) => {
       });
     }
 
-    const tokenInfo = await axios.post(
-      'https://oauth2.googleapis.com/tokeninfo',
-      null,
-      { params: { id_token: credential, client_id: googleClientId } }
-    );
+    // Verify Google ID token using GET request (Google's tokeninfo endpoint expects GET)
+    const tokenInfo = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
+      params: { id_token: credential }
+    });
 
-    const { email, email_verified, name, picture } = tokenInfo.data;
+    const { email, email_verified, name, picture, aud } = tokenInfo.data;
+
+    // Verify that the audience (client ID) matches our app's client ID
+    if (aud !== googleClientId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token audience mismatch. Invalid Google client ID.'
+      });
+    }
 
     if (!email_verified) {
       return res.status(401).json({
@@ -256,12 +133,11 @@ exports.googleAuth = async (req, res, next) => {
       });
     }
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       user = await User.create({
-        name,
-        email,
-        password: undefined,
+        name: name || email.split('@')[0],
+        email: email.toLowerCase(),
         role: 'customer'
       });
     }
@@ -321,6 +197,8 @@ exports.updateProfile = async (req, res, next) => {
   }
 };
 
+// @desc    Get current user profile
+// @route   GET /api/auth/me
 exports.getMe = async (req, res, next) => {
   try {
     // req.user gets mapped automatically by your execution layer's 'protect' middleware validation guard
