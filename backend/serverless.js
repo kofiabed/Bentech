@@ -56,11 +56,16 @@ async function connectDB() {
     return cached.conn;
   }
   if (!cached.promise) {
-    const opts = { bufferCommands: false };
-    cached.promise = mongoose.connect(MONGO_URI, opts).then((m) => {
+    // Use bufferCommands: true (default) to allow Mongoose to queue operations
+    // while the initial connection is being established in serverless
+    cached.promise = mongoose.connect(MONGO_URI).then(async (m) => {
       console.log('Database connected (serverless)');
-      // Run auto-seed after connection
-      autoSeed().catch(err => console.error('Auto-seed error:', err.message));
+      // Run auto-seed after connection is fully established
+      try {
+        await autoSeed(m);
+      } catch (seedErr) {
+        console.error('Auto-seed error:', seedErr.message);
+      }
       return m;
     });
   }
@@ -68,7 +73,18 @@ async function connectDB() {
   return cached.conn;
 }
 
-connectDB().catch(err => console.error('DB connection error:', err.message));
+// Middleware that ensures DB is connected before handling any API request
+app.use(async (req, res, next) => {
+  // Skip DB check for non-API routes
+  if (!req.path.startsWith('/api/')) return next();
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection middleware error:', err.message);
+    res.status(503).json({ success: false, message: 'Database connection unavailable. Please try again.' });
+  }
+});
 
 mongoose.connection.on('error', err => console.error('DB runtime error:', err));
 
