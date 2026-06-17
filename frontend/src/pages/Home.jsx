@@ -70,36 +70,35 @@ export default function Home({ onItemAdd, onNavigate, user }) {
         <section style={{ 
           background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%)', 
           color: '#ffffff',
-          padding: '64px 0 54px 0',
+          padding: 'clamp(32px, 5vw, 64px) 0',
           borderBottom: '1px solid var(--border-color)',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden'
         }}>
-          {/* Background ambient light */}
           <div style={{ position: 'absolute', top: '-20%', left: '30%', width: '300px', height: '300px', borderRadius: '50%', backgroundColor: 'var(--color-secondary)', opacity: 0.08, filter: 'blur(60px)', pointerEvents: 'none' }} />
           
           <div className="container-premium" style={{ position: 'relative', zIndex: 1 }}>
             <span style={{
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: '800',
-              letterSpacing: '0.15em',
+              letterSpacing: '0.12em',
               color: 'var(--color-secondary)',
               textTransform: 'uppercase',
-              marginBottom: '12px',
+              marginBottom: '10px',
               display: 'block'
             }}>
               Welcome back, {user.name.split(' ')[0]}
             </span>
             
             <h1 style={{
-              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontSize: 'clamp(1.5rem, 5vw, 3rem)',
               fontWeight: '900',
               letterSpacing: '-0.03em',
-              marginBottom: '28px',
+              marginBottom: '24px',
               color: '#ffffff',
               textTransform: 'none',
-              lineHeight: '1.2'
+              lineHeight: '1.15'
             }}>
               What are you looking for today?
             </h1>
@@ -107,24 +106,27 @@ export default function Home({ onItemAdd, onNavigate, user }) {
             {/* Search Form */}
             <form onSubmit={(e) => { e.preventDefault(); onNavigate('catalog', null, homeSearch); }} style={{ 
               maxWidth: '600px', 
-              margin: '0 auto 36px',
+              margin: '0 auto 28px',
               display: 'flex',
-              gap: '12px',
-              position: 'relative'
+              gap: '8px',
+              position: 'relative',
+              flexDirection: 'row',
+              flexWrap: 'wrap'
             }}>
-              <div style={{ position: 'relative', flex: 1 }}>
+              <div style={{ position: 'relative', flex: '1 1 200px', minWidth: 0 }}>
                 <input
                   type="text"
-                  placeholder="Search laptops, smartphones, noise-canceling headphones..."
+                  placeholder="Search laptops, smartphones..."
                   value={homeSearch}
                   onChange={(e) => setHomeSearch(e.target.value)}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   className="form-input-premium"
                   style={{ 
-                    padding: '16px 20px 16px 48px', 
+                    padding: '14px 16px 14px 44px', 
                     borderRadius: '12px', 
-                    fontSize: '1rem',
+                    fontSize: '0.95rem',
+                    width: '100%',
                     backgroundColor: isFocused ? '#ffffff' : 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: isFocused ? 'var(--color-text-primary)' : '#ffffff',
@@ -134,23 +136,24 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                 />
                 <i className="bi bi-search" style={{ 
                   position: 'absolute', 
-                  left: '18px', 
+                  left: '16px', 
                   top: '50%', 
                   transform: 'translateY(-50%)', 
                   color: isFocused ? 'var(--color-text-muted)' : 'rgba(255, 255, 255, 0.6)',
-                  fontSize: '1.1rem'
+                  fontSize: '1rem'
                 }} />
               </div>
               <button 
                 type="submit" 
                 className="btn btn-primary" 
                 style={{ 
-                  padding: '16px 32px', 
+                  padding: '14px 24px', 
                   borderRadius: '12px', 
                   backgroundColor: 'var(--color-secondary)', 
                   color: 'var(--color-primary)',
                   fontWeight: '700',
-                  letterSpacing: '0.05em'
+                  letterSpacing: '0.05em',
+                  flex: '0 0 auto'
                 }}
               >
                 Search
@@ -161,7 +164,7 @@ export default function Home({ onItemAdd, onNavigate, user }) {
             <div style={{ 
               display: 'flex', 
               justifyContent: 'center', 
-              gap: '12px', 
+              gap: '8px', 
               flexWrap: 'wrap' 
             }}>
               {CATEGORIES.map((cat, idx) => (
@@ -171,16 +174,17 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 18px',
+                    gap: '6px',
+                    padding: '8px 14px',
                     backgroundColor: 'rgba(255, 255, 255, 0.08)',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
                     borderRadius: '30px',
                     color: '#ffffff',
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     fontWeight: '600',
                     cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    lineHeight: 1
                   }}
                   onMouseOver={e => {
                     e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
@@ -191,7 +195,7 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                     e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
                   }}
                 >
-                  <i className={`bi ${cat.icon}`} />
+                  <i className={`bi ${cat.icon}`} style={{ fontSize: '0.85rem' }} />
                   {cat.name}
                 </button>
               ))}
@@ -200,29 +204,29 @@ export default function Home({ onItemAdd, onNavigate, user }) {
         </section>
       ) : (
         /* ============ EDITORIAL HERO (LOGGED-OUT GUEST) ============ */
-        <section style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-2xl)' }}>
+        <section style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-xl)' }}>
           <div className="container-premium hero-split">
             
             {/* Left - Content Panel */}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'left' }}>
               <span style={{
-                fontSize: '0.75rem',
+                fontSize: '0.7rem',
                 fontWeight: '800',
-                letterSpacing: '0.15em',
+                letterSpacing: '0.12em',
                 color: 'var(--color-primary)',
                 textTransform: 'uppercase',
-                marginBottom: '16px',
+                marginBottom: '14px',
                 display: 'block'
               }}>
                 NEW COLLECTION / SEASON 2026
               </span>
               
               <h1 style={{
-                fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+                fontSize: 'clamp(2rem, 7vw, 4.5rem)',
                 fontWeight: '900',
                 lineHeight: '0.95',
                 letterSpacing: '-0.04em',
-                marginBottom: '24px',
+                marginBottom: '20px',
                 color: 'var(--color-primary-dark)'
               }}>
                 PREMIUM TECH,<br />
@@ -230,27 +234,27 @@ export default function Home({ onItemAdd, onNavigate, user }) {
               </h1>
               
               <p style={{
-                fontSize: '1rem',
+                fontSize: 'clamp(0.85rem, 2vw, 1rem)',
                 color: 'var(--color-text-secondary)',
                 lineHeight: '1.7',
                 maxWidth: '460px',
-                marginBottom: '36px'
+                marginBottom: '28px'
               }}>
                 Explore Ghana's finest curated catalog of genuine laptops, accessories, and smartphones. Precision-engineered products backed by warranty.
               </p>
               
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => onNavigate('auth')}
                   className="btn btn-primary"
-                  style={{ minWidth: '180px' }}
+                  style={{ minWidth: '160px', flex: '1 1 auto' }}
                 >
                   JOIN TECHNOVA
                 </button>
                 <button
                   onClick={() => onNavigate('catalog')}
                   className="btn btn-outline"
-                  style={{ minWidth: '180px' }}
+                  style={{ minWidth: '160px', flex: '1 1 auto' }}
                 >
                   BROWSE LATEST
                 </button>
@@ -259,22 +263,23 @@ export default function Home({ onItemAdd, onNavigate, user }) {
               {/* Stats */}
               <div style={{
                 display: 'flex',
-                gap: '40px',
-                marginTop: '48px',
-                paddingTop: '24px',
-                borderTop: '1px solid var(--border-color)'
+                gap: 'clamp(16px, 4vw, 40px)',
+                marginTop: '36px',
+                paddingTop: '20px',
+                borderTop: '1px solid var(--border-color)',
+                flexWrap: 'wrap'
               }}>
                 <div>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--color-primary)', display: 'block' }}>500+</span>
-                  <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GENUINE ITEMS</span>
+                  <span style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: '800', color: 'var(--color-primary)', display: 'block' }}>500+</span>
+                  <span style={{ fontSize: '0.6rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GENUINE ITEMS</span>
                 </div>
                 <div>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--color-primary)', display: 'block' }}>48h</span>
-                  <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DELIVERY GUARANTEE</span>
+                  <span style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: '800', color: 'var(--color-primary)', display: 'block' }}>48h</span>
+                  <span style={{ fontSize: '0.6rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DELIVERY GUARANTEE</span>
                 </div>
                 <div>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--color-primary)', display: 'block' }}>100%</span>
-                  <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>WARRANTY SUPPORT</span>
+                  <span style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: '800', color: 'var(--color-primary)', display: 'block' }}>100%</span>
+                  <span style={{ fontSize: '0.6rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>WARRANTY SUPPORT</span>
                 </div>
               </div>
             </div>
@@ -282,7 +287,7 @@ export default function Home({ onItemAdd, onNavigate, user }) {
             {/* Right - Premium Visual Art Panel */}
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'relative', alignItems: 'center' }}>
               <div className="hero-glow-shadow" />
-              <div className="hero-image-container">
+              <div className="hero-image-container" style={{ maxWidth: 'min(500px, 90vw)' }}>
                 <img 
                   src="/hero_tech_showcase.png" 
                   alt="Premium Technology Showcase" 
@@ -295,33 +300,33 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                   left: 0,
                   right: 0,
                   background: 'linear-gradient(to top, rgba(11, 15, 25, 0.9) 0%, rgba(11, 15, 25, 0.4) 70%, rgba(11, 15, 25, 0) 100%)',
-                  padding: '32px 24px',
+                  padding: 'clamp(16px, 3vw, 32px)',
                   color: '#ffffff',
                   textAlign: 'left'
                 }}>
                   <span style={{
-                    fontSize: '0.65rem',
+                    fontSize: '0.6rem',
                     fontWeight: '800',
-                    letterSpacing: '0.15em',
+                    letterSpacing: '0.12em',
                     color: 'var(--color-secondary)',
                     textTransform: 'uppercase',
                     display: 'block',
-                    marginBottom: '6px'
+                    marginBottom: '4px'
                   }}>
                     SELECTION 2026
                   </span>
-                  <h3 style={{ fontSize: '1.25rem', color: '#ffffff', fontWeight: '800', margin: '0 0 4px', textTransform: 'none', letterSpacing: '-0.02em' }}>
+                  <h3 style={{ fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)', color: '#ffffff', fontWeight: '800', margin: '0 0 4px', textTransform: 'none', letterSpacing: '-0.02em' }}>
                     The Future of Laptops & Mobile
                   </h3>
-                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', margin: '0 0 12px' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.7rem', margin: '0 0 8px' }}>
                     Authentic products directly sourced from Authorized Brand Distributors.
                   </p>
                   <span style={{
                     display: 'inline-block',
                     border: '1px solid rgba(255,255,255,0.25)',
-                    padding: '6px 12px',
+                    padding: '4px 10px',
                     borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.65rem',
+                    fontSize: '0.6rem',
                     fontWeight: '700',
                     letterSpacing: '0.05em'
                   }}>
@@ -338,31 +343,31 @@ export default function Home({ onItemAdd, onNavigate, user }) {
       {/* ============ MINIMALIST CATEGORIES GRID ============ */}
       <section style={{ borderBottom: '1px solid var(--border-color)', padding: 'var(--space-2xl) 0' }}>
         <div className="container-premium">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '36px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>SHOP BY CATEGORY</h2>
-            <button onClick={() => onNavigate('catalog')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
+            <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', fontWeight: '800' }}>SHOP BY CATEGORY</h2>
+            <button onClick={() => onNavigate('catalog')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
               ALL DEPARTMENTS &rarr;
             </button>
           </div>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
             gap: '1px',
             backgroundColor: 'var(--border-color)',
             border: '1px solid var(--border-color)'
-          }}>
+          }} className="categories-grid-mobile">
             {CATEGORIES.map((cat, idx) => (
               <div
                 key={idx}
                 onClick={() => onNavigate('catalog', cat.name)}
                 style={{
-                  padding: '36px 16px',
+                  padding: 'clamp(20px, 3vw, 36px) 12px',
                   backgroundColor: '#ffffff',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '16px',
+                  gap: '12px',
                   cursor: 'pointer',
                   textAlign: 'center',
                   transition: 'background-color 0.2s ease'
@@ -371,19 +376,20 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
               >
                 <div style={{
-                  width: '44px',
-                  height: '44px',
+                  width: '40px',
+                  height: '40px',
                   borderRadius: '50%',
                   backgroundColor: 'var(--color-card-bg)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.2rem',
-                  color: 'var(--color-primary)'
+                  fontSize: '1.1rem',
+                  color: 'var(--color-primary)',
+                  flexShrink: 0
                 }}>
                   <i className={`bi ${cat.icon}`} />
                 </div>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-dark)' }}>{cat.name}</span>
+                <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-dark)', lineHeight: 1.2 }}>{cat.name}</span>
               </div>
             ))}
           </div>
@@ -394,25 +400,28 @@ export default function Home({ onItemAdd, onNavigate, user }) {
       {flashProducts.length > 0 && (
         <section style={{ borderBottom: '1px solid var(--border-color)', padding: 'var(--space-2xl) 0' }}>
           <div className="container-premium">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '36px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '6px', height: '6px', backgroundColor: 'var(--color-error)', borderRadius: '50%', display: 'inline-block' }} />
-                <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>LIMITED FLASH SALE</h2>
+                <span style={{ width: '6px', height: '6px', backgroundColor: 'var(--color-error)', borderRadius: '50%', display: 'inline-block', flexShrink: 0 }} />
+                <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', fontWeight: '800' }}>LIMITED FLASH SALE</h2>
               </div>
-              <button onClick={() => onNavigate('catalog')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              <button onClick={() => onNavigate('catalog')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                 VIEW ALL &rarr;
               </button>
             </div>
 
             <div style={{
               display: 'flex',
-              gap: '24px',
+              gap: '20px',
               overflowX: 'auto',
-              paddingBottom: '16px',
-              scrollSnapType: 'x mandatory'
+              paddingBottom: '12px',
+              scrollSnapType: 'x mandatory',
+              WebkitOverflowScrolling: 'touch',
+              margin: '0 -0.75rem',
+              padding: '0 0.75rem 12px'
             }}>
               {flashProducts.map(product => (
-                <div key={product._id || product.id} style={{ minWidth: '220px', flex: '0 0 220px', scrollSnapAlign: 'start' }}>
+                <div key={product._id || product.id} style={{ minWidth: '200px', flex: '0 0 200px', scrollSnapAlign: 'start' }}>
                   <ProductCard
                     product={product}
                     onAdd={onItemAdd}
@@ -428,9 +437,9 @@ export default function Home({ onItemAdd, onNavigate, user }) {
       {/* ============ LATEST ARRIVALS GRID ============ */}
       <section style={{ padding: 'var(--space-2xl) 0', borderBottom: '1px solid var(--border-color)' }}>
         <div className="container-premium">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '36px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>LATEST ARRIVALS</h2>
-            <button onClick={() => onNavigate('catalog')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
+            <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', fontWeight: '800' }}>LATEST ARRIVALS</h2>
+            <button onClick={() => onNavigate('catalog')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', fontWeight: '700', color: 'var(--color-primary)', letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
               BROWSE ALL &rarr;
             </button>
           </div>
@@ -438,8 +447,8 @@ export default function Home({ onItemAdd, onNavigate, user }) {
           {products.length > 0 ? (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gap: '40px 24px'
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+              gap: 'clamp(16px, 3vw, 40px) clamp(12px, 2vw, 24px)'
             }}>
               {products.slice(0, 8).map(product => (
                 <ProductCard
@@ -451,9 +460,9 @@ export default function Home({ onItemAdd, onNavigate, user }) {
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '64px', backgroundColor: 'var(--color-card-bg)', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-sm)' }}>
-              <span style={{ fontSize: '1.5rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '8px' }}>📦</span>
-              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>No products cataloged yet. Check back soon.</p>
+            <div style={{ textAlign: 'center', padding: '48px 24px', backgroundColor: 'var(--color-card-bg)', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: '1.3rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '8px' }}>📦</span>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.82rem' }}>No products cataloged yet. Check back soon.</p>
             </div>
           )}
         </div>
@@ -462,19 +471,19 @@ export default function Home({ onItemAdd, onNavigate, user }) {
       {/* ============ EDITORIAL REVIEWS ============ */}
       <section style={{ padding: 'var(--space-2xl) 0', backgroundColor: 'var(--color-card-bg)', borderBottom: '1px solid var(--border-color)' }}>
         <div className="container-premium">
-          <h2 style={{ fontSize: '1.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '48px' }}>WHAT OUR CUSTOMERS SAY</h2>
+          <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', fontWeight: '800', textAlign: 'center', marginBottom: 'clamp(24px, 5vw, 48px)' }}>WHAT OUR CUSTOMERS SAY</h2>
           
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '24px'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '16px'
           }}>
             {reviews.slice(0, 4).map(rev => (
               <div
                 key={rev.id}
                 style={{
                   backgroundColor: '#ffffff',
-                  padding: '28px',
+                  padding: '24px',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-color)',
                   display: 'flex',
@@ -484,27 +493,28 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', gap: '4px', marginBottom: '12px' }}>
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span key={i} style={{ color: '#f59e0b', fontSize: '0.8rem', opacity: i < rev.rating ? 1 : 0.15 }}>★</span>
                     ))}
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', fontStyle: 'italic', lineHeight: '1.6', marginBottom: '20px' }}>
-                    "{rev.text}"
+                  <p style={{ fontSize: '0.82rem', color: 'var(--color-text-primary)', fontStyle: 'italic', lineHeight: '1.6', marginBottom: '16px' }}>
+                    &ldquo;{rev.text}&rdquo;
                   </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{
-                    width: '32px',
-                    height: '32px',
+                    width: '30px',
+                    height: '30px',
                     borderRadius: '50%',
                     backgroundColor: 'var(--color-primary)',
                     color: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.7rem',
-                    fontWeight: '800'
+                    fontSize: '0.65rem',
+                    fontWeight: '800',
+                    flexShrink: 0
                   }}>
                     {rev.name.split(' ')[0].charAt(0)}{rev.name.split(' ')[1]?.charAt(0) || ''}
                   </div>
@@ -520,19 +530,19 @@ export default function Home({ onItemAdd, onNavigate, user }) {
       </section>
 
       {/* ============ NEWSLETTER ============ */}
-      <section style={{ padding: 'var(--space-3xl) 0' }}>
+      <section style={{ padding: 'var(--space-2xl) 0' }}>
         <div className="container-premium" style={{ display: 'flex', justifyContent: 'center' }}>
           <div style={{
             width: '100%',
             maxWidth: '640px',
             textAlign: 'center',
             border: '1px solid var(--border-color)',
-            padding: '48px 32px',
+            padding: 'clamp(24px, 4vw, 48px) clamp(16px, 3vw, 32px)',
             borderRadius: 'var(--radius-sm)',
             backgroundColor: '#ffffff'
           }}>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '12px' }}>STAY IN THE LOOP</h3>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', maxWidth: '420px', margin: '0 auto 28px' }}>
+            <h3 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', fontWeight: '800', marginBottom: '10px' }}>STAY IN THE LOOP</h3>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: 'clamp(0.8rem, 2vw, 0.85rem)', maxWidth: '420px', margin: '0 auto 24px' }}>
               Subscribe to get exclusive access to new drops, sales updates, and restock notifications.
             </p>
 
@@ -541,17 +551,17 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '12px 24px',
+                padding: '12px 20px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'rgba(46, 125, 50, 0.08)',
                 color: 'var(--color-success)',
                 fontWeight: '700',
-                fontSize: '0.8rem'
+                fontSize: '0.78rem'
               }}>
                 <i className="bi bi-check-circle-fill" /> YOU'RE SUBSCRIBED. THANK YOU.
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '8px', maxWidth: '480px', margin: '0 auto' }}>
+              <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '8px', maxWidth: '480px', margin: '0 auto' }} className="newsletter-form">
                 <input
                   type="email"
                   placeholder="Enter your email address"
@@ -559,9 +569,9 @@ export default function Home({ onItemAdd, onNavigate, user }) {
                   onChange={(e) => setEmail(e.target.value)}
                   className="form-input-premium"
                   required
-                  style={{ flex: 1 }}
+                  style={{ flex: '1 1 auto' }}
                 />
-                <button type="submit" className="btn btn-primary btn-sm" style={{ padding: '14px 24px' }}>
+                <button type="submit" className="btn btn-primary btn-sm" style={{ padding: '14px 20px', flex: '0 0 auto' }}>
                   SUBSCRIBE
                 </button>
               </form>

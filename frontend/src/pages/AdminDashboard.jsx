@@ -81,7 +81,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Control state for sliding form drawers/modals
   const [showProductDrawer, setShowProductDrawer] = useState(false);
   const [showUserDrawer, setShowUserDrawer] = useState(false);
 
@@ -349,31 +348,31 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--color-card-bg)', minHeight: '100vh', padding: '48px 0 96px' }} className="animate-fade-in">
+    <div style={{ backgroundColor: 'var(--color-card-bg)', minHeight: '100vh', padding: 'clamp(24px, 4vw, 48px) 0 clamp(48px, 8vw, 96px)' }} className="animate-fade-in">
       <div className="container-premium">
         
         {/* Modern Title Console */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
-          gap: '24px',
+          gap: '16px',
           alignItems: 'center',
           flexWrap: 'wrap',
           backgroundColor: '#ffffff',
           borderRadius: '16px',
-          padding: '32px',
+          padding: 'clamp(20px, 3vw, 32px)',
           boxShadow: '0 4px 20px rgba(62, 10, 54, 0.02)',
           border: '1px solid var(--border-color)',
-          marginBottom: '32px'
+          marginBottom: '24px'
         }}>
-          <div>
-            <span style={{ fontSize: '0.65rem', fontWeight: '900', letterSpacing: '0.15em', color: 'var(--color-primary)', textTransform: 'uppercase' }}>
+          <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+            <span style={{ fontSize: '0.6rem', fontWeight: '900', letterSpacing: '0.12em', color: 'var(--color-primary)', textTransform: 'uppercase' }}>
               ADMIN OPERATION MATRIX
             </span>
-            <h2 style={{ fontSize: '1.8rem', margin: '4px 0 0', letterSpacing: '-0.02em', textTransform: 'none', fontWeight: '900', color: 'var(--color-primary-dark)' }}>
+            <h2 style={{ fontSize: 'clamp(1.3rem, 4vw, 1.8rem)', margin: '4px 0 0', letterSpacing: '-0.02em', textTransform: 'none', fontWeight: '900', color: 'var(--color-primary-dark)' }}>
               Operational Dashboard
             </h2>
-            <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
               Configure product catalogs, deploy flash sales, moderate customer reviews, and coordinate delivery logistics.
             </p>
           </div>
@@ -381,7 +380,7 @@ export default function AdminDashboard() {
             onClick={fetchAll} 
             disabled={loading} 
             className="btn btn-primary" 
-            style={{ padding: '12px 24px', borderRadius: '8px' }}
+            style={{ padding: '12px 24px', borderRadius: '8px', flexShrink: 0 }}
           >
             {loading ? 'SYNCING DATA...' : 'REFRESH PANEL'}
           </button>
@@ -393,19 +392,20 @@ export default function AdminDashboard() {
             backgroundColor: 'rgba(62, 10, 54, 0.03)',
             color: 'var(--color-primary-dark)',
             borderLeft: '4px solid var(--color-primary)',
-            padding: '16px 24px',
+            padding: '14px 20px',
             borderRadius: '8px',
             fontWeight: '700',
-            fontSize: '0.8rem',
-            marginBottom: '32px',
+            fontSize: '0.78rem',
+            marginBottom: '24px',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            gap: '12px'
           }}>
-            <span>{message}</span>
+            <span style={{ flex: 1 }}>{message}</span>
             <button 
               onClick={() => setMessage('')} 
-              style={{ background: 'none', border: 'none', fontWeight: '900', cursor: 'pointer', color: 'var(--color-primary-dark)' }}
+              style={{ background: 'none', border: 'none', fontWeight: '900', cursor: 'pointer', color: 'var(--color-primary-dark)', flexShrink: 0 }}
             >
               &times;
             </button>
@@ -413,17 +413,17 @@ export default function AdminDashboard() {
         )}
 
         {/* Dashboard Grid Container */}
-        <div className="admin-layout-grid" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '32px', alignItems: 'start' }}>
+        <div className="admin-layout-grid" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 'clamp(16px, 3vw, 32px)', alignItems: 'start' }}>
           
           {/* Side Navigation Sidebar */}
           <aside style={{
             backgroundColor: '#ffffff',
             border: '1px solid var(--border-color)',
             borderRadius: '12px',
-            padding: '20px',
+            padding: '16px',
             boxShadow: '0 4px 20px rgba(62, 10, 54, 0.02)'
           }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {tabs.map(tab => (
                 <button
                   key={tab.id}
@@ -431,24 +431,24 @@ export default function AdminDashboard() {
                   style={{
                     width: '100%',
                     textAlign: 'left',
-                    padding: '14px 18px',
+                    padding: '12px 14px',
                     backgroundColor: activeTab === tab.id ? 'var(--color-primary)' : 'transparent',
                     color: activeTab === tab.id ? '#ffffff' : 'var(--color-text-primary)',
                     border: 'none',
                     borderRadius: '8px',
                     fontWeight: '700',
-                    fontSize: '0.78rem',
+                    fontSize: '0.75rem',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px'
+                    gap: '10px'
                   }}
                 >
-                  <span style={{ fontSize: '1.1rem' }}>{tab.icon}</span>
-                  {tab.label}
+                  <span style={{ fontSize: '1rem' }}>{tab.icon}</span>
+                  <span className="admin-nav-label">{tab.label}</span>
                 </button>
               ))}
             </div>
@@ -459,8 +459,8 @@ export default function AdminDashboard() {
             backgroundColor: '#ffffff',
             border: '1px solid var(--border-color)',
             borderRadius: '12px',
-            padding: '32px',
-            minHeight: '600px',
+            padding: 'clamp(16px, 3vw, 32px)',
+            minHeight: '500px',
             boxShadow: '0 4px 20px rgba(62, 10, 54, 0.02)',
             position: 'relative'
           }}>
@@ -497,16 +497,16 @@ export default function AdminDashboard() {
               backgroundColor: '#ffffff',
               height: '100%',
               boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
-              padding: '40px 32px',
+              padding: 'clamp(24px, 4vw, 40px) clamp(16px, 3vw, 32px)',
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
+              gap: '16px',
               animation: 'slideInDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1) both'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', margin: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px' }}>
+              <h3 style={{ fontSize: '1rem', margin: 0 }}>
                 {editingProduct ? 'Edit Product File' : 'Register New Product'}
               </h3>
               <button 
@@ -523,7 +523,7 @@ export default function AdminDashboard() {
               <input name="name" value={productForm.name} onChange={handleProductChange} required className="form-input-premium" />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div className="form-group-premium">
                 <label className="form-label-premium">Price (GHS)</label>
                 <input name="price" type="number" min="0" value={productForm.price} onChange={handleProductChange} required className="form-input-premium" />
@@ -534,7 +534,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div className="form-group-premium">
                 <label className="form-label-premium">Compare Price (Old)</label>
                 <input name="oldPrice" type="number" min="0" value={productForm.oldPrice} onChange={handleProductChange} className="form-input-premium" />
@@ -547,7 +547,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div className="form-group-premium">
                 <label className="form-label-premium">Brand</label>
                 <input name="brand" value={productForm.brand} onChange={handleProductChange} className="form-input-premium" />
@@ -580,7 +580,7 @@ export default function AdminDashboard() {
               <textarea name="specs" value={productForm.specs} onChange={handleProductChange} rows="3" className="form-input-premium" style={{ fontFamily: 'monospace', fontSize: '0.75rem', resize: 'vertical' }} />
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
               <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex: 1, padding: '12px 0' }}>
                 {editingProduct ? 'SAVE CHANGES' : 'DEPLOY PRODUCT'}
               </button>
@@ -613,16 +613,16 @@ export default function AdminDashboard() {
               backgroundColor: '#ffffff',
               height: '100%',
               boxShadow: '-10px 0 40px rgba(0,0,0,0.1)',
-              padding: '40px 32px',
+              padding: 'clamp(24px, 4vw, 40px) clamp(16px, 3vw, 32px)',
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
+              gap: '16px',
               animation: 'slideInDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1) both'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', margin: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px' }}>
+              <h3 style={{ fontSize: '1rem', margin: 0 }}>
                 {editingUser ? 'Modify User Node' : 'Register Operator Node'}
               </h3>
               <button 
@@ -661,7 +661,7 @@ export default function AdminDashboard() {
               </select>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
               <button type="submit" className="btn btn-primary" style={{ flex: 1, padding: '12px 0' }}>
                 {editingUser ? 'SAVE CHANGES' : 'CREATE USER'}
               </button>
@@ -678,6 +678,16 @@ export default function AdminDashboard() {
         @media (max-width: 991px) {
           .admin-layout-grid {
             grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .admin-nav-label {
+            font-size: 0.72rem !important;
+          }
+        }
+        @private-media (max-width: 480px) {
+          .admin-layout-grid aside {
+            padding: 12px !important;
           }
         }
         @keyframes fadeInOverlay {
@@ -698,11 +708,11 @@ export default function AdminDashboard() {
         <h3 style={panelTitleStyle}>System Health & Telemetry</h3>
         
         {/* Metric Cards Grid */}
-        <div style={{
+        <div className="admin-metric-cards" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '20px',
-          marginBottom: '32px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '16px',
+          marginBottom: '24px'
         }}>
           <MetricCard label="Total Revenue" value={`GHS ${totalRevenue.toLocaleString()}`} detail={`${orders.length} orders settled`} color="#3e0a36" />
           <MetricCard label="Catalog Products" value={products.length} detail={`${flashProducts.length} live flash sales`} color="#2d0727" />
@@ -710,7 +720,7 @@ export default function AdminDashboard() {
           <MetricCard label="Operators Registered" value={users.length} detail={`${staff.length} staff, ${customers.length} users`} color="#c62828" />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
           <OverviewBlock title="Top Performing Catalog Item" body={products[0]?.name ? `${products[0].name} has the highest visibility rating.` : 'No products in database.'} />
           <OverviewBlock title="Low Stock Level warning" body={lowStockProducts.length > 0 ? `${lowStockProducts.length} items are running below safe stock threshhold (5 items).` : 'All catalog products are securely stocked.'} />
           <OverviewBlock title="Fulfillments Pending Courier" body={`${orders.filter(order => order.status !== 'Delivered').length} orders require shipping updates.`} />
@@ -723,59 +733,58 @@ export default function AdminDashboard() {
   function renderProducts() {
     return (
       <div className="animate-fade-in">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
-          <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--color-primary-dark)' }}>Product Inventory ({products.length})</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px', flexWrap: 'wrap', gap: '12px' }}>
+          <h3 style={{ fontSize: '1rem', margin: 0, color: 'var(--color-primary-dark)' }}>Product Inventory ({products.length})</h3>
           <button 
             onClick={() => { resetProductForm(); setShowProductDrawer(true); }}
-            className="btn btn-primary"
+            className="btn btn-primary btn-sm"
             style={{ padding: '10px 18px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             <span>+</span> Deploy Product
           </button>
         </div>
 
-        {/* Scroll Contained Table */}
-        <div className="table-premium-wrap" style={{ maxHeight: '560px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+        <div className="table-premium-wrap" style={{ maxHeight: 'clamp(400px, 60vh, 560px)', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
           <table className="table-premium" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#ffffff' }}>
               <tr>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Product</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Category</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Price</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Stock</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Tag</th>
-                <th style={{ textAlign: 'center', padding: '14px 18px' }}>Actions</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Product</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Category</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Price</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Stock</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Tag</th>
+                <th style={{ textAlign: 'center', padding: '12px 14px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map(product => (
                 <tr key={getProductId(product)} style={{ borderBottom: '1px solid var(--border-color-light)' }}>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '36px', height: '36px', backgroundColor: 'var(--color-card-bg)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                  <td style={{ padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--color-card-bg)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                         {product.img && (product.img.startsWith('/') || product.img.startsWith('http') || product.img.startsWith('data:')) ? (
                           <img src={product.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '2px' }} />
                         ) : (
-                          <span style={{ fontSize: '1.25rem' }}>{product.img || '📦'}</span>
+                          <span style={{ fontSize: '1.1rem' }}>{product.img || '📦'}</span>
                         )}
                       </div>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-dark)' }}>{product.name}</strong>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>{product.brand || 'Generic'}</span>
+                      <div style={{ minWidth: 0 }}>
+                        <strong style={{ display: 'block', fontSize: '0.82rem', color: 'var(--color-text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{product.name}</strong>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>{product.brand || 'Generic'}</span>
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.8rem' }}>{product.category}</td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.8rem', fontWeight: '700' }}>GHS {Number(product.price || 0).toLocaleString()}</td>
+                  <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{product.category}</td>
+                  <td style={{ padding: '12px 14px', fontSize: '0.78rem', fontWeight: '700' }}>GHS {Number(product.price || 0).toLocaleString()}</td>
                   <td style={{ 
-                    padding: '14px 18px', 
-                    fontSize: '0.8rem', 
+                    padding: '12px 14px', 
+                    fontSize: '0.78rem', 
                     fontWeight: product.stock <= 5 ? '800' : '500',
                     color: product.stock <= 5 ? 'var(--color-error)' : 'inherit'
                   }}>
-                    {product.stock} units
+                    {product.stock}
                   </td>
-                  <td style={{ padding: '14px 18px' }}>
+                  <td style={{ padding: '12px 14px' }}>
                     {product.tag && (
                       <span className="badge-premium" style={{ 
                         backgroundColor: product.tag === 'Flash Sale' ? 'rgba(198,40,40,0.08)' : 'rgba(62,10,54,0.05)', 
@@ -785,7 +794,7 @@ export default function AdminDashboard() {
                       </span>
                     )}
                   </td>
-                  <td style={{ padding: '14px 18px', textAlign: 'center' }}>
+                  <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                     <button
                       onClick={() => {
                         setEditingProduct(getProductId(product));
@@ -798,16 +807,16 @@ export default function AdminDashboard() {
                         setShowProductDrawer(true);
                       }}
                       className="btn btn-outline btn-sm"
-                      style={{ padding: '8px 14px', marginRight: '8px', borderRadius: '6px' }}
+                      style={{ padding: '6px 12px', marginRight: '6px', borderRadius: '6px', fontSize: '0.65rem' }}
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => deleteProduct(getProductId(product))}
                       className="btn btn-sm"
-                      style={{ backgroundColor: '#fff1f2', color: 'var(--color-error)', padding: '8px 14px', borderRadius: '6px' }}
+                      style={{ backgroundColor: '#fff1f2', color: 'var(--color-error)', padding: '6px 12px', borderRadius: '6px', fontSize: '0.65rem' }}
                     >
-                      Delete
+                      Del
                     </button>
                   </td>
                 </tr>
@@ -824,18 +833,17 @@ export default function AdminDashboard() {
       <div className="animate-fade-in">
         <h3 style={panelTitleStyle}>Configure Flash Sales & Discounts</h3>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', marginTop: '16px' }}>
-          {/* Configure deals box */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginTop: '16px' }}>
           <div style={{
             backgroundColor: 'var(--color-card-bg)',
             border: '1px solid var(--border-color)',
-            padding: '24px',
+            padding: '20px',
             borderRadius: '12px',
             height: 'fit-content'
           }}>
-            <h4 style={{ fontSize: '0.85rem', marginBottom: '16px', color: 'var(--color-primary-dark)' }}>Activate Flash Promo tag</h4>
+            <h4 style={{ fontSize: '0.82rem', marginBottom: '14px', color: 'var(--color-primary-dark)' }}>Activate Flash Promo tag</h4>
             
-            <div className="form-group-premium" style={{ marginBottom: '20px' }}>
+            <div className="form-group-premium" style={{ marginBottom: '16px' }}>
               <label className="form-label-premium">Choose Target Catalog Product</label>
               <select
                 value={flashProductId}
@@ -858,24 +866,23 @@ export default function AdminDashboard() {
             </button>
           </div>
 
-          {/* Active list box */}
-          <div style={{ border: '1px solid var(--border-color)', borderRadius: '12px', padding: '24px' }}>
-            <h4 style={{ fontSize: '0.85rem', marginBottom: '16px', color: 'var(--color-primary-dark)' }}>Live Promo Campaigns ({flashProducts.length})</h4>
+          <div style={{ border: '1px solid var(--border-color)', borderRadius: '12px', padding: '20px' }}>
+            <h4 style={{ fontSize: '0.82rem', marginBottom: '14px', color: 'var(--color-primary-dark)' }}>Live Promo Campaigns ({flashProducts.length})</h4>
             
             {flashProducts.length === 0 ? (
-              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>No products listed under active flash promotions.</p>
+              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>No products listed under active flash promotions.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {flashProducts.map(p => (
-                  <div key={getProductId(p)} className="flex-between" style={{ padding: '12px 16px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff' }}>
-                    <div>
-                      <strong style={{ fontSize: '0.82rem', display: 'block', color: 'var(--color-text-dark)' }}>{p.name}</strong>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontWeight: '700' }}>GHS {Number(p.price).toLocaleString()}</span>
+                  <div key={getProductId(p)} className="flex-between" style={{ padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff', gap: '8px', flexWrap: 'wrap' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <strong style={{ fontSize: '0.8rem', display: 'block', color: 'var(--color-text-dark)' }}>{p.name}</strong>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--color-primary)', fontWeight: '700' }}>GHS {Number(p.price).toLocaleString()}</span>
                     </div>
                     <button
                       onClick={() => clearFlashSale(getProductId(p))}
                       className="btn btn-sm"
-                      style={{ padding: '6px 12px', backgroundColor: '#fff1f2', color: 'var(--color-error)', border: 'none', borderRadius: '4px', fontSize: '0.7rem' }}
+                      style={{ padding: '6px 10px', backgroundColor: '#fff1f2', color: 'var(--color-error)', border: 'none', borderRadius: '4px', fontSize: '0.65rem', flexShrink: 0 }}
                     >
                       Remove
                     </button>
@@ -894,46 +901,47 @@ export default function AdminDashboard() {
       <div className="animate-fade-in">
         <h3 style={panelTitleStyle}>Client Order Fulfilment Logistics</h3>
         
-        <div className="table-premium-wrap" style={{ maxHeight: '560px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+        <div className="table-premium-wrap" style={{ maxHeight: 'clamp(400px, 60vh, 560px)', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
           <table className="table-premium" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#ffffff' }}>
               <tr>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Order Ref</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Customer Details</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Basket Content</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Grand Total</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Tracking Status</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Courier Status Log</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Order Ref</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Customer Details</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Basket Content</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Total</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Status</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Tracking</th>
               </tr>
             </thead>
             <tbody>
               {orders.map(order => (
                 <tr key={order._id} style={{ borderBottom: '1px solid var(--border-color-light)' }}>
-                  <td style={{ padding: '14px 18px', fontSize: '0.78rem' }}>
+                  <td style={{ padding: '12px 14px', fontSize: '0.75rem' }}>
                     <strong>#{order._id.substring(18)}</strong>
-                    <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>{new Date(order.createdAt).toLocaleDateString()}</span>
+                    <span style={{ display: 'block', fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>{new Date(order.createdAt).toLocaleDateString()}</span>
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.8rem' }}>
-                    <strong style={{ color: 'var(--color-text-dark)' }}>{order.user?.name || 'Guest checkout'}</strong>
-                    <span style={{ display: 'block', fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>{order.user?.email || ''}</span>
+                  <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>
+                    <strong style={{ color: 'var(--color-text-dark)' }}>{order.user?.name || 'Guest'}</strong>
+                    <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--color-text-muted)', wordBreak: 'break-all' }}>{order.user?.email || ''}</span>
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-                    {order.items?.map(item => `${item.product?.name || 'Product'} (x${item.qty})`).join(', ')}
+                  <td style={{ padding: '12px 14px', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
+                    {order.items?.slice(0, 2).map(item => `${item.product?.name || 'Product'} (x${item.qty})`).join(', ')}
+                    {order.items?.length > 2 && ' ...'}
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.8rem', fontWeight: '700', color: 'var(--color-primary)' }}>
+                  <td style={{ padding: '12px 14px', fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-primary)' }}>
                     GHS {Number(order.financials?.grandTotal || 0).toLocaleString()}
                   </td>
-                  <td style={{ padding: '14px 18px' }}>
+                  <td style={{ padding: '12px 14px' }}>
                     <select
                       value={order.status}
                       onChange={e => updateOrderStatus(order._id, e.target.value)}
                       className="form-input-premium form-select-premium"
-                      style={{ padding: '8px 28px 8px 12px', fontSize: '0.75rem', width: 'auto', backgroundColor: '#ffffff' }}
+                      style={{ padding: '6px 24px 6px 10px', fontSize: '0.7rem', width: 'auto', minWidth: '100px', backgroundColor: '#ffffff' }}
                     >
                       {orderStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                     </select>
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{order.trackingUpdate}</td>
+                  <td style={{ padding: '12px 14px', fontSize: '0.72rem', color: 'var(--color-text-muted)', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.trackingUpdate}</td>
                 </tr>
               ))}
             </tbody>
@@ -949,44 +957,43 @@ export default function AdminDashboard() {
 
     return (
       <div className="animate-fade-in">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
-          <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--color-primary-dark)' }}>
-            Registered {isStaff ? 'Staff Associates' : 'Clients'} ({visibleUsers.length})
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px', flexWrap: 'wrap', gap: '12px' }}>
+          <h3 style={{ fontSize: '1rem', margin: 0, color: 'var(--color-primary-dark)' }}>
+            Registered {isStaff ? 'Staff' : 'Clients'} ({visibleUsers.length})
           </h3>
           <button 
             onClick={() => { resetUserForm(); setUserForm(prev => ({ ...prev, role })); setShowUserDrawer(true); }}
-            className="btn btn-primary"
+            className="btn btn-primary btn-sm"
             style={{ padding: '10px 18px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             <span>+</span> Register {isStaff ? 'Staff' : 'User'}
           </button>
         </div>
 
-        {/* Scroll Contained Table */}
-        <div className="table-premium-wrap" style={{ maxHeight: '560px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+        <div className="table-premium-wrap" style={{ maxHeight: 'clamp(400px, 60vh, 560px)', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
           <table className="table-premium" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#ffffff' }}>
               <tr>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>User Details</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Email Address</th>
-                <th style={{ textAlign: 'left', padding: '14px 18px' }}>Phone Contact</th>
-                <th style={{ textAlign: 'center', padding: '14px 18px' }}>Actions</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>User</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Email</th>
+                <th style={{ textAlign: 'left', padding: '12px 14px' }}>Phone</th>
+                <th style={{ textAlign: 'center', padding: '12px 14px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {visibleUsers.map(user => (
                 <tr key={getUserId(user)} style={{ borderBottom: '1px solid var(--border-color-light)' }}>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
+                  <td style={{ padding: '12px 14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.78rem', flexShrink: 0 }}>
                         {user.name?.charAt(0).toUpperCase()}
                       </div>
-                      <strong style={{ fontSize: '0.82rem', color: 'var(--color-text-dark)' }}>{user.name}</strong>
+                      <strong style={{ fontSize: '0.78rem', color: 'var(--color-text-dark)' }}>{user.name}</strong>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.8rem' }}>{user.email}</td>
-                  <td style={{ padding: '14px 18px', fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>{user.phone || 'No phone registered'}</td>
-                  <td style={{ padding: '14px 18px', textAlign: 'center' }}>
+                  <td style={{ padding: '12px 14px', fontSize: '0.75rem', wordBreak: 'break-all' }}>{user.email}</td>
+                  <td style={{ padding: '12px 14px', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{user.phone || '—'}</td>
+                  <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                     <button
                       onClick={() => {
                         setEditingUser(getUserId(user));
@@ -994,16 +1001,16 @@ export default function AdminDashboard() {
                         setShowUserDrawer(true);
                       }}
                       className="btn btn-outline btn-sm"
-                      style={{ padding: '8px 14px', marginRight: '8px', borderRadius: '6px' }}
+                      style={{ padding: '6px 12px', marginRight: '6px', borderRadius: '6px', fontSize: '0.65rem' }}
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => deleteUser(getUserId(user))}
                       className="btn btn-sm"
-                      style={{ backgroundColor: '#fff1f2', color: 'var(--color-error)', padding: '8px 14px', borderRadius: '6px' }}
+                      style={{ backgroundColor: '#fff1f2', color: 'var(--color-error)', padding: '6px 12px', borderRadius: '6px', fontSize: '0.65rem' }}
                     >
-                      Delete
+                      Del
                     </button>
                   </td>
                 </tr>
@@ -1023,31 +1030,30 @@ export default function AdminDashboard() {
       <div className="animate-fade-in">
         <h3 style={panelTitleStyle}>Moderation Hub & Feedback Logs</h3>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', marginTop: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginTop: '16px' }}>
           
-          {/* Moderation queue */}
           <div style={{
             backgroundColor: 'var(--color-card-bg)',
             border: '1px solid var(--border-color)',
-            padding: '24px',
+            padding: '20px',
             borderRadius: '12px',
             height: 'fit-content'
           }}>
-            <h4 style={{ fontSize: '0.85rem', marginBottom: '16px', color: 'var(--color-primary-dark)' }}>Moderation Queue ({pendingReviews.length})</h4>
+            <h4 style={{ fontSize: '0.82rem', marginBottom: '14px', color: 'var(--color-primary-dark)' }}>Moderation Queue ({pendingReviews.length})</h4>
             
             {pendingReviews.length === 0 ? (
-              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>No feedback entries require review moderation.</p>
+              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>No feedback entries require review moderation.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {pendingReviews.map(review => (
-                  <div key={review._id} style={{ border: '1px solid var(--border-color)', padding: '16px', borderRadius: '8px', backgroundColor: '#ffffff' }}>
-                    <strong>{review.name}</strong>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)', margin: '4px 0 12px', fontStyle: 'italic', lineHeight: '1.4' }}>"{review.text}"</p>
-                    <small style={{ color: 'var(--color-text-muted)', display: 'block', marginBottom: '12px' }}>Rating: {review.rating}/5 &bull; {review.product}</small>
+                  <div key={review._id} style={{ border: '1px solid var(--border-color)', padding: '14px', borderRadius: '8px', backgroundColor: '#ffffff' }}>
+                    <strong style={{ fontSize: '0.82rem' }}>{review.name}</strong>
+                    <p style={{ fontSize: '0.78rem', color: 'var(--color-text-primary)', margin: '4px 0 10px', fontStyle: 'italic', lineHeight: '1.4' }}>"{review.text}"</p>
+                    <small style={{ color: 'var(--color-text-muted)', display: 'block', marginBottom: '10px', fontSize: '0.72rem' }}>Rating: {review.rating}/5 &bull; {review.product}</small>
                     
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button onClick={() => updateReviewStatus(review._id, 'approved')} className="btn btn-primary btn-sm" style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '0.68rem' }}>Approve</button>
-                      <button onClick={() => updateReviewStatus(review._id, 'rejected')} className="btn btn-outline btn-sm" style={{ padding: '6px 12px', borderRadius: '4px', fontSize: '0.68rem' }}>Reject</button>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button onClick={() => updateReviewStatus(review._id, 'approved')} className="btn btn-primary btn-sm" style={{ padding: '6px 10px', borderRadius: '4px', fontSize: '0.65rem' }}>Approve</button>
+                      <button onClick={() => updateReviewStatus(review._id, 'rejected')} className="btn btn-outline btn-sm" style={{ padding: '6px 10px', borderRadius: '4px', fontSize: '0.65rem' }}>Reject</button>
                     </div>
                   </div>
                 ))}
@@ -1055,34 +1061,33 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* Settled list table */}
-          <div style={{ flex: 1 }}>
-            <h4 style={{ fontSize: '0.85rem', marginBottom: '16px', color: 'var(--color-primary-dark)' }}>Moderated Feedback Logs</h4>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h4 style={{ fontSize: '0.82rem', marginBottom: '14px', color: 'var(--color-primary-dark)' }}>Moderated Feedback Logs</h4>
             
-            <div className="table-premium-wrap" style={{ maxHeight: '420px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+            <div className="table-premium-wrap" style={{ maxHeight: 'clamp(300px, 50vh, 420px)', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
               <table className="table-premium" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: 'left', padding: '12px 14px' }}>User Details</th>
-                    <th style={{ textAlign: 'left', padding: '12px 14px' }}>Written Feedback</th>
-                    <th style={{ textAlign: 'left', padding: '12px 14px' }}>Rating</th>
-                    <th style={{ textAlign: 'left', padding: '12px 14px' }}>Status</th>
-                    <th style={{ textAlign: 'center', padding: '12px 14px' }}>Actions</th>
+                    <th style={{ textAlign: 'left', padding: '10px 12px' }}>User</th>
+                    <th style={{ textAlign: 'left', padding: '10px 12px' }}>Feedback</th>
+                    <th style={{ textAlign: 'left', padding: '10px 12px' }}>Rating</th>
+                    <th style={{ textAlign: 'left', padding: '10px 12px' }}>Status</th>
+                    <th style={{ textAlign: 'center', padding: '10px 12px' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {visibleReviews.map(review => (
                     <tr key={review._id} style={{ borderBottom: '1px solid var(--border-color-light)' }}>
-                      <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>
+                      <td style={{ padding: '10px 12px', fontSize: '0.75rem' }}>
                         <strong>{review.name}</strong>
-                        <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>{review.email}</span>
+                        <span style={{ display: 'block', fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>{review.email}</span>
                       </td>
-                      <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>
+                      <td style={{ padding: '10px 12px', fontSize: '0.75rem', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         <span style={{ display: 'block', lineHeight: '1.4' }}>{review.text}</span>
                         <small style={{ color: 'var(--color-text-muted)' }}>Product: {review.product}</small>
                       </td>
-                      <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{review.rating}/5</td>
-                      <td style={{ padding: '12px 14px' }}>
+                      <td style={{ padding: '10px 12px', fontSize: '0.75rem' }}>{review.rating}/5</td>
+                      <td style={{ padding: '10px 12px' }}>
                         <span className="badge-premium" style={{ 
                           backgroundColor: review.status === 'approved' ? 'rgba(46,125,50,0.08)' : 'rgba(198,40,40,0.08)', 
                           color: review.status === 'approved' ? 'var(--color-success)' : 'var(--color-error)' 
@@ -1090,14 +1095,14 @@ export default function AdminDashboard() {
                           {review.status}
                         </span>
                       </td>
-                      <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                      <td style={{ padding: '10px 12px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                         {review.status !== 'approved' && (
-                          <button onClick={() => updateReviewStatus(review._id, 'approved')} className="btn btn-outline btn-sm" style={{ padding: '4px 8px', marginRight: '4px', fontSize: '0.65rem' }}>Approve</button>
+                          <button onClick={() => updateReviewStatus(review._id, 'approved')} className="btn btn-outline btn-sm" style={{ padding: '4px 8px', marginRight: '4px', fontSize: '0.6rem' }}>Approve</button>
                         )}
                         {review.status !== 'rejected' && (
-                          <button onClick={() => updateReviewStatus(review._id, 'rejected')} className="btn btn-outline btn-sm" style={{ padding: '4px 8px', marginRight: '4px', fontSize: '0.65rem' }}>Reject</button>
+                          <button onClick={() => updateReviewStatus(review._id, 'rejected')} className="btn btn-outline btn-sm" style={{ padding: '4px 8px', marginRight: '4px', fontSize: '0.6rem' }}>Reject</button>
                         )}
-                        <button onClick={() => deleteReview(review._id)} className="btn btn-sm" style={{ backgroundColor: '#fff1f2', color: 'var(--color-error)', padding: '4px 8px', fontSize: '0.65rem' }}>Delete</button>
+                        <button onClick={() => deleteReview(review._id)} className="btn btn-sm" style={{ backgroundColor: '#fff1f2', color: 'var(--color-error)', padding: '4px 8px', fontSize: '0.6rem' }}>Del</button>
                       </td>
                     </tr>
                   ))}
@@ -1118,7 +1123,7 @@ function MetricCard({ label, value, detail, color }) {
       backgroundColor: '#ffffff',
       border: '1px solid var(--border-color)',
       borderRadius: '12px',
-      padding: '24px',
+      padding: '20px',
       boxShadow: '0 4px 20px rgba(62, 10, 54, 0.01)',
       position: 'relative',
       overflow: 'hidden'
@@ -1131,13 +1136,13 @@ function MetricCard({ label, value, detail, color }) {
         width: '100%',
         backgroundColor: color
       }} />
-      <span style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '0.65rem', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+      <span style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '0.6rem', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
         {label}
       </span>
-      <strong style={{ display: 'block', color: 'var(--color-primary-dark)', fontSize: '1.6rem', margin: '12px 0 6px', letterSpacing: '-0.02em', fontWeight: '900' }}>
+      <strong style={{ display: 'block', color: 'var(--color-primary-dark)', fontSize: 'clamp(1.3rem, 3vw, 1.6rem)', margin: '10px 0 4px', letterSpacing: '-0.02em', fontWeight: '900' }}>
         {value}
       </strong>
-      <small style={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem', fontWeight: '600' }}>{detail}</small>
+      <small style={{ color: 'var(--color-text-secondary)', fontSize: '0.72rem', fontWeight: '600' }}>{detail}</small>
     </div>
   );
 }
@@ -1148,12 +1153,12 @@ function OverviewBlock({ title, body }) {
       backgroundColor: 'var(--color-card-bg)',
       border: '1px solid var(--border-color)',
       borderRadius: '10px',
-      padding: '20px',
-      lineHeight: '1.6',
+      padding: '16px',
+      lineHeight: '1.5',
       boxShadow: '0 2px 10px rgba(0,0,0,0.01)'
     }}>
-      <strong style={{ fontSize: '0.8rem', color: 'var(--color-primary-dark)', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</strong>
-      <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', margin: 0 }}>{body}</p>
+      <strong style={{ fontSize: '0.78rem', color: 'var(--color-primary-dark)', display: 'block', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</strong>
+      <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', margin: 0 }}>{body}</p>
     </div>
   );
 }
@@ -1169,11 +1174,11 @@ const tabs = [
 ];
 
 const panelTitleStyle = {
-  margin: '0 0 24px 0',
-  fontSize: '1.15rem',
+  margin: '0 0 20px 0',
+  fontSize: 'clamp(1rem, 2.5vw, 1.15rem)',
   color: 'var(--color-primary-dark)',
   borderBottom: '2px solid var(--color-secondary)',
-  paddingBottom: '12px',
+  paddingBottom: '10px',
   textTransform: 'uppercase',
   letterSpacing: '0.04em'
 };

@@ -112,39 +112,39 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
 
   if (orderComplete) {
     return (
-      <div style={{ maxWidth: '600px', margin: '60px auto', padding: '24px' }} className="animate-fade-in">
+      <div style={{ maxWidth: '600px', margin: 'clamp(32px, 6vw, 60px) auto', padding: '16px' }} className="animate-fade-in">
         <div style={{ 
           backgroundColor: '#FFFFFF', 
           border: '1px solid var(--border-color)', 
           borderRadius: '16px', 
-          padding: '48px 32px', 
+          padding: 'clamp(24px, 4vw, 48px) clamp(16px, 3vw, 32px)', 
           textAlign: 'center',
           boxShadow: '0 10px 40px rgba(62, 10, 54, 0.05)'
         }}>
           <div style={{ 
-            width: '80px', 
-            height: '80px', 
+            width: '72px', 
+            height: '72px', 
             borderRadius: '50%', 
             backgroundColor: 'rgba(46, 125, 50, 0.08)', 
             color: 'var(--color-success)', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            fontSize: '2.5rem',
-            margin: '0 auto 24px'
+            fontSize: '2.2rem',
+            margin: '0 auto 20px'
           }}>
             <i className="bi bi-check-lg"></i>
           </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--color-primary-dark)', margin: '0 0 12px', textTransform: 'none' }}>
+          <h2 style={{ fontSize: 'clamp(1.4rem, 4vw, 1.8rem)', fontWeight: '800', color: 'var(--color-primary-dark)', margin: '0 0 12px', textTransform: 'none' }}>
             Order Placed Successfully!
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: '1.6', margin: '0 0 32px' }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 28px' }}>
             Thank you for shopping with Ben-TechNova-Ghana. Your transaction is complete, and we have dispatched logistics synchronization routines.
           </p>
           <button 
             onClick={() => { setIsCheckingOut(false); setOrderComplete(false); }} 
             className="btn btn-primary"
-            style={{ width: '100%', padding: '14px' }}
+            style={{ width: '100%', maxWidth: '320px', padding: '14px' }}
           >
             Continue Shopping
           </button>
@@ -154,14 +154,14 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
   }
 
   return (
-    <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', padding: '40px var(--space-lg)' }} className="animate-fade-in">
+    <div style={{ maxWidth: 'var(--max-width)', margin: '0 auto', padding: 'clamp(16px, 4vw, 40px) var(--space-lg)' }} className="animate-fade-in">
       
       {/* Title block */}
-      <div style={{ marginBottom: '32px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: '900', color: 'var(--color-primary-dark)', margin: 0, textTransform: 'none', letterSpacing: '-0.03em' }}>
+      <div style={{ marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '14px' }}>
+        <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: '900', color: 'var(--color-primary-dark)', margin: 0, textTransform: 'none', letterSpacing: '-0.03em' }}>
           {isCheckingOut ? 'Checkout Details' : 'Shopping Cart'}
         </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+        <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
           {isCheckingOut ? 'Complete your delivery and payment coordinates below.' : 'Review premium selections cached inside your active session.'}
         </p>
       </div>
@@ -169,52 +169,52 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
       {cart.length === 0 && !isCheckingOut ? (
         <div style={{ 
           textAlign: 'center', 
-          padding: '64px 32px', 
+          padding: 'clamp(32px, 6vw, 64px) clamp(16px, 3vw, 32px)', 
           backgroundColor: 'var(--color-card-bg)', 
           border: '1px dashed var(--border-color)', 
           borderRadius: '12px'
         }}>
           <div style={{ 
-            width: '64px', 
-            height: '64px', 
+            width: '56px', 
+            height: '56px', 
             borderRadius: '50%', 
             backgroundColor: '#ffffff', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            fontSize: '1.8rem',
+            fontSize: '1.6rem',
             color: 'var(--color-text-muted)',
-            margin: '0 auto 16px',
+            margin: '0 auto 14px',
             border: '1px solid var(--border-color)'
           }}>
             <i className="bi bi-cart-x"></i>
           </div>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', margin: '0 0 20px' }}>Your shopping cart is currently empty.</p>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: '0 0 16px' }}>Your shopping cart is currently empty.</p>
           <button onClick={() => window.location.reload()} className="btn btn-primary btn-sm">Browse Products</button>
         </div>
       ) : (
-        <div className="cart-layout" style={{ display: 'grid', gap: '32px' }}>
+        <div className="cart-layout" style={{ display: 'grid', gap: '24px' }}>
           
           {/* Left Side: Items or Checkout Form */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
             {!isCheckingOut ? (
               <div style={{ 
                 backgroundColor: '#FFFFFF', 
                 border: '1px solid var(--border-color)', 
                 borderRadius: '12px', 
-                padding: '24px'
+                padding: 'clamp(16px, 3vw, 24px)'
               }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px', textTransform: 'none' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px', textTransform: 'none' }}>
                   Items in Cart ({cart.length})
                 </h3>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {cart.map(item => (
                     <div key={item.id} style={{ 
                       display: 'flex', 
-                      gap: '20px', 
-                      paddingBottom: '20px', 
+                      gap: '12px', 
+                      paddingBottom: '16px', 
                       borderBottom: '1px solid var(--border-color)',
                       flexWrap: 'wrap',
                       alignItems: 'flex-start'
@@ -222,8 +222,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                       
                       {/* Product Image */}
                       <div style={{ 
-                        width: '80px', 
-                        height: '80px', 
+                        width: '72px', 
+                        height: '72px', 
                         borderRadius: '8px', 
                         backgroundColor: 'var(--color-card-bg)', 
                         display: 'flex', 
@@ -236,19 +236,19 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                         {item.img && item.img.startsWith('data:image') ? (
                           <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                         ) : (
-                          <span style={{ fontSize: '2rem' }}>{item.img || '📦'}</span>
+                          <span style={{ fontSize: '1.8rem' }}>{item.img || '📦'}</span>
                         )}
                       </div>
 
                       {/* Details */}
-                      <div style={{ flex: 1, minWidth: '200px' }}>
-                        <span style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-muted)', letterSpacing: '0.05em', display: 'block', marginBottom: '4px' }}>
+                      <div style={{ flex: '1 1 140px', minWidth: 0 }}>
+                        <span style={{ fontSize: '0.6rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-muted)', letterSpacing: '0.05em', display: 'block', marginBottom: '2px' }}>
                           {item.brand || 'TechNova'}
                         </span>
-                        <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text-dark)', textTransform: 'none' }}>
+                        <h4 style={{ margin: '0 0 4px 0', fontSize: '0.9rem', fontWeight: '700', color: 'var(--color-text-dark)', textTransform: 'none' }}>
                           {item.name}
                         </h4>
-                        <div style={{ display: 'flex', gap: '16px', fontSize: '0.75rem', marginTop: '12px' }}>
+                        <div style={{ display: 'flex', gap: '12px', fontSize: '0.7rem', marginTop: '8px', flexWrap: 'wrap' }}>
                           <button 
                             onClick={() => handleSaveForLater(item)} 
                             style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: '700', padding: 0 }}
@@ -272,9 +272,9 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                           onMouseOver={e => e.currentTarget.style.backgroundColor = '#E2E8F0'}
                           onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
-                          −
+                          &minus;
                         </button>
-                        <span style={{ fontWeight: '700', minWidth: '32px', textAlign: 'center', fontSize: '0.85rem' }}>{item.qty}</span>
+                        <span style={{ fontWeight: '700', minWidth: '28px', textAlign: 'center', fontSize: '0.85rem' }}>{item.qty}</span>
                         <button 
                           onClick={() => updateQty(item.id, 1)} 
                           style={{ background: 'none', border: 'none', width: '32px', height: '32px', cursor: 'pointer', fontWeight: '600', color: 'var(--color-text-primary)', transition: 'background-color 0.2s' }}
@@ -286,11 +286,11 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                       </div>
 
                       {/* Pricing */}
-                      <div style={{ minWidth: '110px', textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-primary-dark)', display: 'block' }}>
+                      <div style={{ minWidth: '100px', textAlign: 'right' }}>
+                        <span style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--color-primary-dark)', display: 'block' }}>
                           GHS {(item.price * item.qty).toLocaleString()}
                         </span>
-                        <small style={{ color: 'var(--color-text-muted)', fontSize: '0.7rem' }}>
+                        <small style={{ color: 'var(--color-text-muted)', fontSize: '0.65rem' }}>
                           GHS {item.price.toLocaleString()} each
                         </small>
                       </div>
@@ -300,23 +300,23 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                 </div>
               </div>
             ) : (
-              <form onSubmit={handlePlaceOrder} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <form onSubmit={handlePlaceOrder} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 
                 {/* 1. Shipping Details */}
                 <div style={{ 
                   backgroundColor: '#FFFFFF', 
                   border: '1px solid var(--border-color)', 
                   borderRadius: '12px', 
-                  padding: '24px'
+                  padding: 'clamp(16px, 3vw, 24px)'
                 }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>1</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>1</span>
                     Shipping Information
                   </h3>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <label htmlFor="shipping-name" style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Full Name</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label htmlFor="shipping-name" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Full Name</label>
                       <input 
                         id="shipping-name" 
                         type="text" 
@@ -327,8 +327,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                         style={{ borderRadius: '8px', backgroundColor: '#FFFFFF' }}
                       />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <label htmlFor="shipping-phone" style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Phone Number</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label htmlFor="shipping-phone" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Phone Number</label>
                       <input 
                         id="shipping-phone" 
                         type="tel" 
@@ -342,8 +342,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
-                    <label htmlFor="shipping-address" style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Logistics Address</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+                    <label htmlFor="shipping-address" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Logistics Address</label>
                     <input 
                       id="shipping-address" 
                       type="text" 
@@ -356,8 +356,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                     />
                   </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <label htmlFor="shipping-city" style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>City / Region</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label htmlFor="shipping-city" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>City / Region</label>
                     <select 
                       id="shipping-city" 
                       value={shipping.city} 
@@ -378,14 +378,14 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                   backgroundColor: '#FFFFFF', 
                   border: '1px solid var(--border-color)', 
                   borderRadius: '12px', 
-                  padding: '24px'
+                  padding: 'clamp(16px, 3vw, 24px)'
                 }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>2</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>2</span>
                     Delivery Service
                   </h3>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {[
                       { key: 'standard', title: 'Standard Courier Shipping', cost: 20, desc: 'Delivered in 2-3 business days' },
                       { key: 'express', title: 'Express Rush Dispatch', cost: 50, desc: 'Delivered within 24 hours (Accra/Tema only)' },
@@ -397,8 +397,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                           style={{ 
                             display: 'flex', 
                             alignItems: 'center', 
-                            gap: '16px', 
-                            padding: '16px', 
+                            gap: '12px', 
+                            padding: '14px', 
                             border: `1px solid ${isActive ? 'var(--color-primary)' : 'var(--border-color)'}`, 
                             backgroundColor: isActive ? 'var(--color-secondary-light)' : '#ffffff', 
                             borderRadius: '8px', 
@@ -411,13 +411,13 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                             name="delivery" 
                             checked={isActive} 
                             onChange={() => setShipping({...shipping, deliveryType: opt.key})} 
-                            style={{ accentColor: 'var(--color-primary)', width: '18px', height: '18px' }}
+                            style={{ accentColor: 'var(--color-primary)', width: '16px', height: '16px', flexShrink: 0 }}
                           />
-                          <div style={{ flex: 1 }}>
-                            <strong style={{ fontSize: '0.9rem', color: 'var(--color-text-dark)' }}>{opt.title}</strong>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>{opt.desc}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <strong style={{ fontSize: '0.85rem', color: 'var(--color-text-dark)' }}>{opt.title}</strong>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>{opt.desc}</div>
                           </div>
-                          <span style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--color-primary)' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>
                             GHS {opt.cost}
                           </span>
                         </label>
@@ -431,14 +431,14 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                   backgroundColor: '#FFFFFF', 
                   border: '1px solid var(--border-color)', 
                   borderRadius: '12px', 
-                  padding: '24px'
+                  padding: 'clamp(16px, 3vw, 24px)'
                 }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>3</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>3</span>
                     Payment Method
                   </h3>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
                     {[
                       { key: 'momo', icon: 'bi-phone', label: 'Mobile Money' },
                       { key: 'card', icon: 'bi-credit-card', label: 'Credit/Debit Card' },
@@ -453,12 +453,12 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                             border: `1px solid ${isActive ? 'var(--color-primary)' : 'var(--border-color)'}`, 
                             backgroundColor: isActive ? 'var(--color-secondary-light)' : '#ffffff', 
                             borderRadius: '8px', 
-                            padding: '20px 16px', 
+                            padding: '16px 12px', 
                             textAlign: 'center', 
                             cursor: 'pointer', 
                             display: 'flex', 
                             flexDirection: 'column', 
-                            gap: '10px', 
+                            gap: '8px', 
                             alignItems: 'center',
                             transition: 'all 0.2s',
                             boxShadow: isActive ? '0 4px 12px rgba(62, 10, 54, 0.05)' : 'none'
@@ -466,25 +466,25 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                           onMouseOver={e => { if(!isActive) e.currentTarget.style.borderColor = 'var(--color-primary)'; }}
                           onMouseOut={e => { if(!isActive) e.currentTarget.style.borderColor = 'var(--border-color)'; }}
                         >
-                          <div style={{ fontSize: '1.8rem', color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}>
+                          <div style={{ fontSize: '1.5rem', color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}>
                             <i className={`bi ${pm.icon}`}></i>
                           </div>
-                          <strong style={{ fontSize: '0.8rem', color: 'var(--color-text-dark)', fontWeight: '700' }}>{pm.label}</strong>
+                          <strong style={{ fontSize: '0.75rem', color: 'var(--color-text-dark)', fontWeight: '700' }}>{pm.label}</strong>
                         </div>
                       );
                     })}
                   </div>
 
                   {/* Dynamic Payment Inputs */}
-                  <div style={{ marginTop: '24px', borderTop: '1px dashed var(--border-color)', paddingTop: '20px' }}>
+                  <div style={{ marginTop: '20px', borderTop: '1px dashed var(--border-color)', paddingTop: '16px' }}>
                     {paymentMethod === 'momo' && (
-                      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--color-primary-dark)', margin: 0, textTransform: 'none' }}>
+                      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--color-primary-dark)', margin: 0, textTransform: 'none' }}>
                           Mobile Money Billing Details
                         </h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label htmlFor="momo-provider" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Network Provider</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label htmlFor="momo-provider" style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Network Provider</label>
                             <select 
                               id="momo-provider" 
                               value={momoProvider} 
@@ -497,8 +497,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                               <option value="airteltigo">AT Money (AirtelTigo)</option>
                             </select>
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label htmlFor="momo-number" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>MoMo Phone Number</label>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label htmlFor="momo-number" style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>MoMo Phone Number</label>
                             <input 
                               id="momo-number" 
                               type="tel" 
@@ -511,19 +511,19 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                             />
                           </div>
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
                           A prompt will be pushed to this mobile number for authorization.
                         </span>
                       </div>
                     )}
 
                     {paymentMethod === 'card' && (
-                      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--color-primary-dark)', margin: 0, textTransform: 'none' }}>
+                      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--color-primary-dark)', margin: 0, textTransform: 'none' }}>
                           Debit/Credit Card Details
                         </h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label htmlFor="card-name" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Cardholder Name</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label htmlFor="card-name" style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Cardholder Name</label>
                           <input 
                             id="card-name" 
                             type="text" 
@@ -535,8 +535,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                             style={{ borderRadius: '8px', backgroundColor: '#FFFFFF' }}
                           />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label htmlFor="card-number" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Card Number</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label htmlFor="card-number" style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Card Number</label>
                           <input 
                             id="card-number" 
                             type="text" 
@@ -549,9 +549,9 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                             style={{ borderRadius: '8px', backgroundColor: '#FFFFFF' }}
                           />
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label htmlFor="card-expiry" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Expiry Date</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label htmlFor="card-expiry" style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>Expiry Date</label>
                             <input 
                               id="card-expiry" 
                               type="text" 
@@ -564,8 +564,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                               style={{ borderRadius: '8px', backgroundColor: '#FFFFFF' }}
                             />
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label htmlFor="card-cvv" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>CVV</label>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label htmlFor="card-cvv" style={{ fontSize: '0.65rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.04em' }}>CVV</label>
                             <input 
                               id="card-cvv" 
                               type="password" 
@@ -584,10 +584,10 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
 
                     {paymentMethod === 'cod' && (
                       <div className="animate-fade-in" style={{ padding: '12px 16px', backgroundColor: 'var(--color-secondary-light)', borderRadius: '8px', border: '1px solid var(--color-secondary)' }}>
-                        <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-primary-dark)', fontWeight: '600' }}>
+                        <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--color-primary-dark)', fontWeight: '600' }}>
                           <i className="bi bi-info-circle-fill"></i> Cash on Delivery Selected
                         </p>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>
                           Please verify your shipping details. You will pay the courier when your package arrives.
                         </p>
                       </div>
@@ -596,7 +596,7 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                 </div>
 
                 {/* Submit Actions */}
-                <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                   <button 
                     type="button" 
                     onClick={() => setIsCheckingOut(false)} 
@@ -623,52 +623,53 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                 backgroundColor: 'var(--color-card-bg)', 
                 border: '1px solid var(--border-color)', 
                 borderRadius: '12px', 
-                padding: '24px'
+                padding: 'clamp(16px, 3vw, 24px)'
               }}>
-                <h4 style={{ margin: '0 0 16px 0', fontSize: '1rem', fontWeight: '800', color: 'var(--color-primary-dark)', textTransform: 'none' }}>
+                <h4 style={{ margin: '0 0 14px 0', fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-primary-dark)', textTransform: 'none' }}>
                   Saved Items ({savedForLater.length})
                 </h4>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {savedForLater.map(item => (
                     <div key={item.id} style={{ 
                       display: 'flex', 
                       justifyContent: 'space-between', 
                       alignItems: 'center', 
-                      padding: '12px 16px', 
+                      padding: '12px 14px', 
                       background: '#ffffff', 
                       borderRadius: '8px', 
                       border: '1px solid var(--border-color)',
                       flexWrap: 'wrap',
-                      gap: '12px'
+                      gap: '10px'
                     }}>
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: '1 1 auto', minWidth: 0 }}>
                         <span style={{ 
-                          width: '40px', 
-                          height: '40px', 
+                          width: '36px', 
+                          height: '36px', 
                           borderRadius: '6px', 
                           backgroundColor: 'var(--color-card-bg)', 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
                           overflow: 'hidden',
-                          border: '1px solid var(--border-color)'
+                          border: '1px solid var(--border-color)',
+                          flexShrink: 0
                         }}>
                           {item.img && item.img.startsWith('data:image') ? (
                             <img src={item.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                           ) : (
-                            <span style={{ fontSize: '1.2rem' }}>{item.img || '📦'}</span>
+                            <span style={{ fontSize: '1.1rem' }}>{item.img || '📦'}</span>
                           )}
                         </span>
-                        <div>
-                          <strong style={{ fontSize: '0.85rem', color: 'var(--color-text-dark)', display: 'block' }}>{item.name}</strong>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontWeight: '700' }}>GHS {item.price.toLocaleString()}</span>
+                        <div style={{ minWidth: 0 }}>
+                          <strong style={{ fontSize: '0.82rem', color: 'var(--color-text-dark)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</strong>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--color-primary)', fontWeight: '700' }}>GHS {item.price.toLocaleString()}</span>
                         </div>
                       </div>
                       <button 
                         onClick={() => handleMoveToCart(item)} 
                         className="btn btn-outline btn-sm"
-                        style={{ padding: '8px 16px' }}
+                        style={{ padding: '8px 14px', flexShrink: 0 }}
                       >
                         Move to cart
                       </button>
@@ -686,19 +687,19 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
               backgroundColor: '#FFFFFF', 
               border: '1px solid var(--border-color)', 
               borderRadius: '12px', 
-              padding: '24px',
+              padding: 'clamp(16px, 3vw, 24px)',
               boxShadow: '0 4px 20px rgba(62, 10, 54, 0.02)'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px', textTransform: 'none' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--color-primary-dark)', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px', textTransform: 'none' }}>
                 Order Summary
               </h3>
               
               <div style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
-                gap: '14px', 
-                fontSize: '0.85rem', 
-                paddingBottom: '20px', 
+                gap: '12px', 
+                fontSize: '0.82rem', 
+                paddingBottom: '16px', 
                 borderBottom: '1px solid var(--border-color)' 
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-secondary)' }}>
@@ -724,8 +725,8 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
-                padding: '20px 0', 
-                fontSize: '1.35rem', 
+                padding: '16px 0', 
+                fontSize: 'clamp(1.1rem, 3vw, 1.35rem)', 
                 fontWeight: '900', 
                 color: 'var(--color-primary-dark)' 
               }}>
@@ -735,7 +736,7 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
 
               {/* Coupon Form */}
               {!isCheckingOut && (
-                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px', marginBottom: '20px' }}>
+                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginBottom: '16px' }}>
                   <form onSubmit={applyCoupon} style={{ display: 'flex', gap: '8px' }}>
                     <input 
                       type="text" 
@@ -743,12 +744,12 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                       value={coupon} 
                       onChange={e => setCoupon(e.target.value)} 
                       className="form-input-premium"
-                      style={{ borderRadius: '8px', padding: '8px 12px', fontSize: '0.8rem', backgroundColor: 'var(--color-card-bg)', flex: 1 }}
+                      style={{ borderRadius: '8px', padding: '8px 12px', fontSize: '0.78rem', backgroundColor: 'var(--color-card-bg)', flex: 1 }}
                     />
-                    <button type="submit" className="btn btn-primary btn-sm" style={{ borderRadius: '8px', padding: '8px 16px' }}>Apply</button>
+                    <button type="submit" className="btn btn-primary btn-sm" style={{ borderRadius: '8px', padding: '8px 14px' }}>Apply</button>
                   </form>
-                  {couponError && <p style={{ color: 'var(--color-error)', fontSize: '0.75rem', margin: '6px 0 0 0', fontWeight: '700' }}>{couponError}</p>}
-                  {discount > 0 && <p style={{ color: 'var(--color-success)', fontSize: '0.75rem', margin: '6px 0 0 0', fontWeight: '700' }}><i className="bi bi-patch-check-fill"></i> Coupon code applied successfully!</p>}
+                  {couponError && <p style={{ color: 'var(--color-error)', fontSize: '0.72rem', margin: '6px 0 0 0', fontWeight: '700' }}>{couponError}</p>}
+                  {discount > 0 && <p style={{ color: 'var(--color-success)', fontSize: '0.72rem', margin: '6px 0 0 0', fontWeight: '700' }}><i className="bi bi-patch-check-fill"></i> Coupon code applied successfully!</p>}
                 </div>
               )}
 
@@ -779,8 +780,13 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
       )}
 
       <style>{`
-        @media (min-width: 769px) { .cart-layout { grid-template-columns: 1fr 360px !important; } }
+        @media (min-width: 769px) { .cart-layout { grid-template-columns: 1fr 340px !important; } }
         @media (max-width: 768px) { .cart-layout { grid-template-columns: 1fr !important; } }
+        @media (max-width: 480px) {
+          .cart-layout [style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
+        }
       `}</style>
     </div>
   );

@@ -25,6 +25,7 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
   const [sortBy, setSortBy] = useState('Popularity');
   const [products, setProducts] = useState([]);
   const [activeProductDetails, setActiveProductDetails] = useState(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -54,7 +55,6 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
 
   const maxCatalogPrice = products.length > 0 ? Math.max(...products.map(p => Number(p.price || 0))) : 25000;
 
-  // Sync maxPrice range slider limit when products load
   useEffect(() => {
     if (products.length > 0) {
       setMaxPrice(maxCatalogPrice);
@@ -76,7 +76,6 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
         product.specs ? Object.values(product.specs).join(' ') : ''
       ].join(' ').toLowerCase();
 
-      // Expand common queries
       let searchTerms = [query];
       if (query === 'ps5' || query === 'ps 5') {
         searchTerms.push('playstation');
@@ -88,7 +87,6 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
         searchTerms.push('samsung');
       }
 
-      // Check if any expanded term matches, or all words of original query match
       const words = query.split(/\s+/).filter(Boolean);
       matchesSearch = searchTerms.some(term => textToSearch.includes(term)) || 
                       words.every(word => textToSearch.includes(word));
@@ -121,50 +119,234 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
     setShowInStockOnly(false);
   };
 
+  const FilterPanel = () => (
+    <aside style={{
+      backgroundColor: '#ffffff',
+      border: '1px solid var(--border-color)',
+      padding: '20px',
+      borderRadius: '12px',
+      boxShadow: '0 4px 20px rgba(62,10,54,0.01)'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>
+        <h3 style={{ fontSize: '0.85rem', fontWeight: '800', letterSpacing: '0.05em', margin: 0 }}>
+          REFINE BY
+        </h3>
+        <button 
+          onClick={resetFilters} 
+          style={{ background: 'none', border: 'none', color: 'var(--color-primary)', fontSize: '0.7rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: 0 }}
+        >
+          <i className="bi bi-trash"></i> Reset
+        </button>
+      </div>
+
+      {/* Category Filter list */}
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '10px' }}>
+          Categories
+        </label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {categories.map(cat => {
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  width: '100%',
+                  padding: '10px 12px',
+                  background: isActive ? 'var(--color-secondary-light)' : 'transparent',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-dark)',
+                  fontWeight: isActive ? '700' : '500',
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={e => { if(!isActive) e.currentTarget.style.backgroundColor = 'var(--color-card-bg)'; }}
+                onMouseOut={e => { if(!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <i className={`bi ${CATEGORY_ICONS[cat] || 'bi-tag'}`} style={{ color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)' }}></i>
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Availability Filter toggle */}
+      <div style={{ marginBottom: '24px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+        <label 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            cursor: 'pointer', 
+            fontSize: '0.82rem', 
+            fontWeight: '700',
+            color: 'var(--color-text-dark)' 
+          }}
+        >
+          <span>Show In Stock Only</span>
+          <input 
+            type="checkbox" 
+            checked={showInStockOnly}
+            onChange={(e) => setShowInStockOnly(e.target.checked)}
+            style={{ accentColor: 'var(--color-primary)', width: '16px', height: '16px', cursor: 'pointer' }}
+          />
+        </label>
+      </div>
+
+      {/* Price Range */}
+      <div style={{ marginBottom: '24px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+        <label style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '10px' }}>
+          Price Range (GHS)
+        </label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+          <div>
+            <small style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '2px' }}>Min</small>
+            <input 
+              type="number"
+              value={minPrice}
+              onChange={(e) => setMinPrice(Math.max(0, Number(e.target.value)))}
+              className="form-input-premium"
+              style={{ padding: '8px 10px', fontSize: '0.8rem', borderRadius: '6px' }}
+            />
+          </div>
+          <div>
+            <small style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '2px' }}>Max</small>
+            <input 
+              type="number"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(Math.max(0, Number(e.target.value)))}
+              className="form-input-premium"
+              style={{ padding: '8px 10px', fontSize: '0.8rem', borderRadius: '6px' }}
+            />
+          </div>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max={maxCatalogPrice}
+          step="100"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(Number(e.target.value))}
+          style={{ width: '100%', accentColor: 'var(--color-primary)', cursor: 'pointer' }}
+        />
+      </div>
+
+      {/* Brands Filters */}
+      <div style={{ marginBottom: '24px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+        <label style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '10px' }}>
+          Filter by Brand
+        </label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {brands.map(brand => {
+            const isActive = selectedBrand === brand;
+            return (
+              <button
+                key={brand}
+                onClick={() => setSelectedBrand(brand)}
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '20px',
+                  border: `1px solid ${isActive ? 'var(--color-primary)' : 'var(--border-color)'}`,
+                  backgroundColor: isActive ? 'var(--color-primary)' : '#ffffff',
+                  color: isActive ? '#ffffff' : 'var(--color-text-dark)',
+                  fontSize: '0.7rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {brand}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tags Filters */}
+      <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+        <label style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '10px' }}>
+          Deals & Tags
+        </label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {tags.map(tag => {
+            const isActive = selectedTag === tag;
+            return (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(tag)}
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '20px',
+                  border: `1px solid ${isActive ? 'var(--color-primary)' : 'var(--border-color)'}`,
+                  backgroundColor: isActive ? 'var(--color-secondary-light)' : '#ffffff',
+                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-dark)',
+                  fontSize: '0.7rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {tag === 'All' ? 'Show All' : tag}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </aside>
+  );
+
   return (
-    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', padding: '40px 0' }}>
+    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', padding: 'clamp(16px, 4vw, 40px) 0' }}>
       <div className="container-premium">
         
         {/* Top Header Bar */}
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '24px',
+          gap: '16px',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           borderBottom: '1px solid var(--border-color)',
-          paddingBottom: '24px',
-          marginBottom: '32px'
+          paddingBottom: '20px',
+          marginBottom: '24px'
         }}>
-          <div>
-            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.12em', color: 'var(--color-primary)', textTransform: 'uppercase' }}>DEPARTMENTS</span>
-            <h1 style={{ fontSize: '2rem', margin: '4px 0 0', textTransform: 'none', letterSpacing: '-0.03em', color: 'var(--color-primary-dark)' }}>STORE CATALOG</h1>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+          <div style={{ flex: '1 1 200px' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '0.12em', color: 'var(--color-primary)', textTransform: 'uppercase' }}>DEPARTMENTS</span>
+            <h1 style={{ fontSize: 'clamp(1.4rem, 4vw, 2rem)', margin: '4px 0 0', textTransform: 'none', letterSpacing: '-0.03em', color: 'var(--color-primary-dark)' }}>STORE CATALOG</h1>
+            <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
               Showing {filteredProducts.length} of {products.length} products
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', flex: '1 1 auto', justifyContent: 'flex-end' }}>
+            <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '160px' }}>
               <input
                 type="text"
                 placeholder="Search catalog..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="form-input-premium"
-                style={{ width: '260px', padding: '10px 16px 10px 40px', borderRadius: '8px' }}
+                style={{ width: '100%', padding: '10px 16px 10px 40px', borderRadius: '8px' }}
               />
               <i className="bi bi-search" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }}></i>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <label htmlFor="sort-select" style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>Sort By</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '0 1 auto' }}>
+              <label htmlFor="sort-select" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>Sort</label>
               <select
                 id="sort-select"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="form-input-premium form-select-premium"
-                style={{ width: '180px', borderRadius: '8px', padding: '10px 16px' }}
+                style={{ width: 'auto', minWidth: '140px', borderRadius: '8px', padding: '10px 16px' }}
               >
                 <option value="Popularity">Popularity</option>
                 <option value="Price">Price: Low to High</option>
@@ -172,212 +354,40 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
               </select>
             </div>
 
-            <button onClick={fetchProducts} className="btn btn-outline" style={{ padding: '10px 16px', borderRadius: '8px' }}>
+            {/* Mobile filter toggle button */}
+            <button 
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="btn btn-outline mobile-filter-toggle"
+              style={{ padding: '10px 16px', borderRadius: '8px', display: 'none' }}
+            >
+              <i className="bi bi-funnel"></i> Filters
+            </button>
+
+            <button onClick={fetchProducts} className="btn btn-outline" style={{ padding: '10px 16px', borderRadius: '8px', flexShrink: 0 }}>
               <i className="bi bi-arrow-clockwise"></i>
             </button>
           </div>
         </div>
 
         {/* Layout Grid */}
-        <div className="catalog-layout-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '40px', alignItems: 'start' }}>
+        <div className="catalog-layout-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '32px', alignItems: 'start' }}>
           
-          {/* Sidebar Filter Panel */}
-          <aside style={{
-            position: 'sticky',
-            top: '24px',
-            backgroundColor: '#ffffff',
-            border: '1px solid var(--border-color)',
-            padding: '24px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 20px rgba(62,10,54,0.01)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '0.9rem', fontWeight: '800', letterSpacing: '0.05em', margin: 0 }}>
-                REFINE BY
-              </h3>
-              <button 
-                onClick={resetFilters} 
-                style={{ background: 'none', border: 'none', color: 'var(--color-primary)', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: 0 }}
-              >
-                <i className="bi bi-trash"></i> Reset
-              </button>
-            </div>
-
-            {/* Category Filter list */}
-            <div style={{ marginBottom: '28px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '12px' }}>
-                Categories
-              </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {categories.map(cat => {
-                  const isActive = selectedCategory === cat;
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        width: '100%',
-                        padding: '10px 12px',
-                        background: isActive ? 'var(--color-secondary-light)' : 'transparent',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: isActive ? 'var(--color-primary)' : 'var(--color-text-dark)',
-                        fontWeight: isActive ? '700' : '500',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseOver={e => { if(!isActive) e.currentTarget.style.backgroundColor = 'var(--color-card-bg)'; }}
-                      onMouseOut={e => { if(!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    >
-                      <i className={`bi ${CATEGORY_ICONS[cat] || 'bi-tag'}`} style={{ color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)' }}></i>
-                      {cat}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Availability Filter toggle */}
-            <div style={{ marginBottom: '28px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
-              <label 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  cursor: 'pointer', 
-                  fontSize: '0.85rem', 
-                  fontWeight: '700',
-                  color: 'var(--color-text-dark)' 
-                }}
-              >
-                <span>Show In Stock Only</span>
-                <input 
-                  type="checkbox" 
-                  checked={showInStockOnly}
-                  onChange={(e) => setShowInStockOnly(e.target.checked)}
-                  style={{ accentColor: 'var(--color-primary)', width: '16px', height: '16px', cursor: 'pointer' }}
-                />
-              </label>
-            </div>
-
-            {/* Price Range Manual + Slider */}
-            <div style={{ marginBottom: '28px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '12px' }}>
-                Price Range (GHS)
-              </label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
-                <div>
-                  <small style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '2px' }}>Min</small>
-                  <input 
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(Math.max(0, Number(e.target.value)))}
-                    className="form-input-premium"
-                    style={{ padding: '8px 10px', fontSize: '0.8rem', borderRadius: '6px' }}
-                  />
-                </div>
-                <div>
-                  <small style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', display: 'block', marginBottom: '2px' }}>Max</small>
-                  <input 
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(Math.max(0, Number(e.target.value)))}
-                    className="form-input-premium"
-                    style={{ padding: '8px 10px', fontSize: '0.8rem', borderRadius: '6px' }}
-                  />
-                </div>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max={maxCatalogPrice}
-                step="100"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                style={{ width: '100%', accentColor: 'var(--color-primary)', cursor: 'pointer' }}
-              />
-            </div>
-
-            {/* Brands Filters (Selectable badged pills) */}
-            <div style={{ marginBottom: '28px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '12px' }}>
-                Filter by Brand
-              </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {brands.map(brand => {
-                  const isActive = selectedBrand === brand;
-                  return (
-                    <button
-                      key={brand}
-                      onClick={() => setSelectedBrand(brand)}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        border: `1px solid ${isActive ? 'var(--color-primary)' : 'var(--border-color)'}`,
-                        backgroundColor: isActive ? 'var(--color-primary)' : '#ffffff',
-                        color: isActive ? '#ffffff' : 'var(--color-text-dark)',
-                        fontSize: '0.75rem',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      {brand}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Tags Filters (Sales / Offers badged pills) */}
-            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-secondary)', letterSpacing: '0.08em', display: 'block', marginBottom: '12px' }}>
-                Deals & Tags
-              </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {tags.map(tag => {
-                  const isActive = selectedTag === tag;
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => setSelectedTag(tag)}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        border: `1px solid ${isActive ? 'var(--color-primary)' : 'var(--border-color)'}`,
-                        backgroundColor: isActive ? 'var(--color-secondary-light)' : '#ffffff',
-                        color: isActive ? 'var(--color-primary)' : 'var(--color-text-dark)',
-                        fontSize: '0.75rem',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      {tag === 'All' ? 'Show All' : tag}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-          </aside>
+          {/* Desktop Sidebar Filter Panel */}
+          <div className="desktop-filters">
+            <FilterPanel />
+          </div>
 
           {/* Catalog Grid Area */}
           <section style={{ width: '100%' }}>
             {filteredProducts.length === 0 ? (
               <div style={{
                 textAlign: 'center',
-                padding: '80px 32px',
+                padding: 'clamp(40px, 6vw, 80px) clamp(16px, 3vw, 32px)',
                 border: '1px dashed var(--border-color)',
                 borderRadius: '12px',
                 backgroundColor: 'var(--color-card-bg)'
               }}>
-                <span style={{ fontSize: '2rem', display: 'block', marginBottom: '12px' }}>🔍</span>
+                <span style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', display: 'block', marginBottom: '12px' }}>🔍</span>
                 <h4 style={{ color: 'var(--color-text-dark)', fontSize: '1rem', fontWeight: '800', marginBottom: '6px', textTransform: 'none' }}>
                   No Products Match Your Filters
                 </h4>
@@ -394,8 +404,8 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
             ) : (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                gap: '40px 24px'
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                gap: 'clamp(16px, 3vw, 40px) clamp(12px, 2vw, 24px)'
               }}>
                 {filteredProducts.map(product => (
                   <ProductCard
@@ -417,12 +427,58 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
           </section>
         </div>
 
+        {/* Mobile Filter Drawer */}
+        {mobileFiltersOpen && (
+          <>
+            <div 
+              style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(0,0,0,0.4)',
+                zIndex: 998
+              }}
+              onClick={() => setMobileFiltersOpen(false)}
+            />
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: 'min(340px, 85vw)',
+              height: '100vh',
+              backgroundColor: '#ffffff',
+              zIndex: 999,
+              padding: '20px',
+              overflowY: 'auto',
+              animation: 'slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) both',
+              boxShadow: '4px 0 40px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--border-color)' }}>
+                <h3 style={{ fontSize: '0.9rem', margin: 0 }}>FILTERS</h3>
+                <button 
+                  onClick={() => setMobileFiltersOpen(false)}
+                  style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}
+                >
+                  &times;
+                </button>
+              </div>
+              <FilterPanel />
+              <button 
+                onClick={() => setMobileFiltersOpen(false)}
+                className="btn btn-primary"
+                style={{ width: '100%', marginTop: '20px', padding: '14px' }}
+              >
+                APPLY FILTERS
+              </button>
+            </div>
+          </>
+        )}
+
       </div>
 
       {/* Reusable Premium Detail Modal Overlay */}
       {activeProductDetails && (
         <Modal onClose={() => setActiveProductDetails(null)}>
-          <div style={{ padding: '40px', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '40px', alignItems: 'start' }} className="modal-columns-responsive">
+          <div style={{ padding: 'clamp(16px, 4vw, 40px)', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'clamp(16px, 4vw, 40px)', alignItems: 'start' }} className="modal-columns-responsive">
             
             {/* Left Image column */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -436,33 +492,33 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
                 justifyContent: 'center',
                 border: '1px solid var(--border-color)',
                 overflow: 'hidden',
-                padding: '24px'
+                padding: '16px'
               }}>
                 {activeProductDetails.img && activeProductDetails.img.startsWith('/') ? (
                   <img src={activeProductDetails.img} alt={activeProductDetails.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 ) : activeProductDetails.img && activeProductDetails.img.startsWith('data:image') ? (
                   <img src={activeProductDetails.img} alt={activeProductDetails.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 ) : (
-                  <span style={{ fontSize: '5rem' }}>{activeProductDetails.img || '📦'}</span>
+                  <span style={{ fontSize: 'clamp(3rem, 8vw, 5rem)' }}>{activeProductDetails.img || '📦'}</span>
                 )}
               </div>
             </div>
 
             {/* Right Information column */}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '0.12em', color: 'var(--color-primary)', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '0.12em', color: 'var(--color-primary)', textTransform: 'uppercase' }}>
                 {activeProductDetails.category} / {activeProductDetails.brand}
               </span>
-              <h2 style={{ fontSize: '1.6rem', margin: '4px 0 16px', letterSpacing: '-0.02em', color: 'var(--color-primary-dark)', textTransform: 'none', fontWeight: '800' }}>
+              <h2 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', margin: '4px 0 12px', letterSpacing: '-0.02em', color: 'var(--color-primary-dark)', textTransform: 'none', fontWeight: '800' }}>
                 {activeProductDetails.name}
               </h2>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--color-primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: '800', color: 'var(--color-primary)' }}>
                   GHS {Number(activeProductDetails.price || 0).toLocaleString()}
                 </span>
                 {activeProductDetails.oldPrice && (
-                  <span style={{ fontSize: '1.1rem', color: 'var(--color-text-muted)', textDecoration: 'line-through' }}>
+                  <span style={{ fontSize: '1rem', color: 'var(--color-text-muted)', textDecoration: 'line-through' }}>
                     GHS {Number(activeProductDetails.oldPrice).toLocaleString()}
                   </span>
                 )}
@@ -471,17 +527,17 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
                 </span>
               </div>
 
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', lineHeight: '1.6', marginBottom: '24px' }}>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: 'clamp(0.82rem, 2vw, 0.85rem)', lineHeight: '1.6', marginBottom: '20px' }}>
                 {activeProductDetails.description}
               </p>
 
-              {/* Technical Specifications details */}
+              {/* Technical Specifications */}
               {activeProductDetails.specs && Object.keys(activeProductDetails.specs).length > 0 && (
-                <div style={{ marginBottom: '28px' }}>
-                  <h4 style={{ fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.05em', color: 'var(--color-text-dark)', marginBottom: '8px', textTransform: 'none' }}>
+                <div style={{ marginBottom: '24px' }}>
+                  <h4 style={{ fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.05em', color: 'var(--color-text-dark)', marginBottom: '8px', textTransform: 'none' }}>
                     Specifications Sheet
                   </h4>
-                  <table style={{ width: '100%', fontSize: '0.8rem', borderCollapse: 'collapse' }}>
+                  <table style={{ width: '100%', fontSize: '0.78rem', borderCollapse: 'collapse' }}>
                     <tbody>
                       {Object.entries(activeProductDetails.specs).map(([key, val]) => (
                         <tr key={key} style={{ borderBottom: '1px solid var(--border-color)' }}>
@@ -494,7 +550,7 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '10px' }}>
                 <button
                   onClick={() => { onItemAdd(activeProductDetails); setActiveProductDetails(null); }}
                   disabled={activeProductDetails.stock <= 0}
@@ -508,7 +564,7 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
                   className="btn btn-outline" 
                   style={{ 
                     padding: '14px', 
-                    width: '54px', 
+                    width: '52px', 
                     minWidth: 'auto', 
                     display: 'flex', 
                     justifyContent: 'center', 
@@ -537,13 +593,18 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
           }
           .modal-columns-responsive {
             grid-template-columns: 1fr !important;
-            padding: 24px !important;
+            padding: 16px !important;
           }
-          aside {
-            position: relative !important;
-            top: 0 !important;
-            margin-bottom: 24px !important;
+          .desktop-filters {
+            display: none !important;
           }
+          .mobile-filter-toggle {
+            display: inline-flex !important;
+          }
+        }
+        @keyframes slideInLeft {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
         }
       `}</style>
     </div>

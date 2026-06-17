@@ -98,10 +98,6 @@ export default function Auth({ onAuthSuccess }) {
     }
   };
 
-  // const triggerGoogleSocialAuth = () => {
-  //   alert("OAuth2 Redirect: Contacting Google Identity federation server arrays...");
-  // };
-
   return (
     <div className="animate-fade-in" style={{
       display: 'flex',
@@ -117,10 +113,9 @@ export default function Auth({ onAuthSuccess }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
-        padding: '64px',
+        padding: 'clamp(24px, 5vw, 64px)',
         color: '#ffffff'
       }}>
-        {/* Background Image with Dark Brand Color Overlay */}
         <img
           src="/hero_tech_showcase.png"
           alt="TechNova Brand Visual"
@@ -140,18 +135,17 @@ export default function Auth({ onAuthSuccess }) {
           zIndex: 2
         }} />
 
-        {/* Content */}
         <div style={{ position: 'relative', zIndex: 3, maxWidth: '440px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px' }}>
-            <span style={{ fontSize: '1.2rem', fontWeight: '900', letterSpacing: '-0.03em', color: '#ffffff' }}>BEN-TECHNOVA</span>
-            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--color-secondary)', letterSpacing: '0.15em', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '6px', marginLeft: '4px' }}>GHANA</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '20px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '1.1rem', fontWeight: '900', letterSpacing: '-0.03em', color: '#ffffff' }}>BEN-TECHNOVA</span>
+            <span style={{ fontSize: '0.6rem', fontWeight: '700', color: 'var(--color-secondary)', letterSpacing: '0.15em', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '6px', marginLeft: '4px' }}>GHANA</span>
           </div>
           
-          <h2 style={{ fontSize: '2rem', color: '#ffffff', fontWeight: '800', lineHeight: '1.1', marginBottom: '16px', letterSpacing: '-0.03em' }}>
+          <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#ffffff', fontWeight: '800', lineHeight: '1.1', marginBottom: '14px', letterSpacing: '-0.03em' }}>
             ELEVATE YOUR DIGITAL WORKSPACE
           </h2>
           
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', lineHeight: '1.7' }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 'clamp(0.78rem, 1.5vw, 0.85rem)', lineHeight: '1.7' }}>
             Register or sign in to synchronize your order histories, secure warranty logs, and get priority access to restocks across Accra, Kumasi, Tema, and Tamale.
           </p>
         </div>
@@ -163,16 +157,16 @@ export default function Auth({ onAuthSuccess }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '48px 24px',
+        padding: 'clamp(24px, 4vw, 48px) clamp(16px, 3vw, 24px)',
         backgroundColor: '#ffffff'
       }}>
         <div style={{ width: '100%', maxWidth: '380px' }}>
           
           {/* Mobile-only logo */}
-          <div className="auth-mobile-logo-only" style={{ marginBottom: '28px', display: 'none', justifyContent: 'center' }}>
+          <div className="auth-mobile-logo-only" style={{ marginBottom: '24px', display: 'none', justifyContent: 'center' }}>
             <div style={{
-              width: '44px',
-              height: '44px',
+              width: '40px',
+              height: '40px',
               borderRadius: '50%',
               backgroundColor: 'var(--color-primary)',
               color: '#ffffff',
@@ -180,16 +174,16 @@ export default function Auth({ onAuthSuccess }) {
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: '950',
-              fontSize: '1rem'
+              fontSize: '0.9rem'
             }}>
               TN
             </div>
           </div>
 
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.5rem)', marginBottom: '8px', letterSpacing: '-0.02em' }}>
             {authMode === 'login' ? 'WELCOME BACK' : 'CREATE ACCOUNT'}
           </h2>
-          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '32px' }}>
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: '28px' }}>
             {authMode === 'login'
               ? 'Sign in to access your dashboard'
               : 'Join TechNova Ghana for premium electronics'}
@@ -200,18 +194,18 @@ export default function Auth({ onAuthSuccess }) {
             <div style={{
               display: 'flex',
               borderBottom: '1px solid var(--border-color)',
-              marginBottom: '28px'
+              marginBottom: '24px'
             }}>
               <button
                 type="button"
                 onClick={() => { setAuthMode('login'); setErrorMessage(''); }}
                 style={{
                   flex: 1,
-                  padding: '12px 16px',
+                  padding: '10px 16px',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: '0.75rem',
+                  fontSize: '0.72rem',
                   fontWeight: '700',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
@@ -227,11 +221,11 @@ export default function Auth({ onAuthSuccess }) {
                 onClick={() => { setAuthMode('register'); setErrorMessage(''); }}
                 style={{
                   flex: 1,
-                  padding: '12px 16px',
+                  padding: '10px 16px',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  fontSize: '0.75rem',
+                  fontSize: '0.72rem',
                   fontWeight: '700',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
@@ -245,28 +239,26 @@ export default function Auth({ onAuthSuccess }) {
             </div>
           )}
 
-          {/* Error Banner */}
           {errorMessage && (
             <div style={{
-              padding: '12px 16px',
+              padding: '12px 14px',
               backgroundColor: 'rgba(198, 40, 40, 0.05)',
               color: 'var(--color-error)',
               borderRadius: 'var(--radius-sm)',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: '600',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              marginBottom: '24px'
+              marginBottom: '20px'
             }}>
               <i className="bi bi-exclamation-triangle-fill" />
               {errorMessage}
             </div>
           )}
 
-          {/* Forms */}
           {authMode !== 'forgot' ? (
-            <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               
               {authMode === 'register' && (
                 <div className="form-group-premium">
@@ -301,7 +293,7 @@ export default function Auth({ onAuthSuccess }) {
                 <input
                   type="password"
                   required
-                  placeholder="••••••••"
+                  placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                   value={formData.password}
                   onChange={e => setFormData({ ...formData, password: e.target.value })}
                   className="form-input-premium"
@@ -313,7 +305,7 @@ export default function Auth({ onAuthSuccess }) {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}>
                   <span
                     onClick={() => setAuthMode('forgot')}
-                    style={{ fontSize: '0.7rem', fontWeight: '700', color: 'var(--color-primary)', cursor: 'pointer', letterSpacing: '0.02em', textTransform: 'uppercase' }}
+                    style={{ fontSize: '0.68rem', fontWeight: '700', color: 'var(--color-primary)', cursor: 'pointer', letterSpacing: '0.02em', textTransform: 'uppercase' }}
                   >
                     Forgot Password?
                   </span>
@@ -324,19 +316,18 @@ export default function Auth({ onAuthSuccess }) {
                 type="submit"
                 disabled={isLoading}
                 className="btn btn-primary"
-                style={{ width: '100%', marginTop: '8px', padding: '14px' }}
+                style={{ width: '100%', marginTop: '6px', padding: '14px' }}
               >
                 {isLoading ? 'PROCESSING...' : authMode === 'login' ? 'SIGN IN' : 'CREATE ACCOUNT'}
               </button>
             </form>
           ) : (
-            /* Forgot Password */
             <form
               onSubmit={(e) => { e.preventDefault(); alert("Reset link sent."); setAuthMode('login'); }}
-              style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '800', marginBottom: '4px' }}>RESET YOUR PASSWORD</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: '1.5', marginBottom: '8px' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: '800', marginBottom: '4px' }}>RESET YOUR PASSWORD</h4>
+              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: '1.5', marginBottom: '6px' }}>
                 Enter your registered email address and we'll send you a password reset link.
               </p>
               
@@ -362,11 +353,11 @@ export default function Auth({ onAuthSuccess }) {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                margin: '28px 0 24px',
+                margin: '24px 0 20px',
                 position: 'relative'
               }}>
                 <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-color)' }} />
-                <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 12px' }}>
+                <span style={{ fontSize: '0.6rem', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 12px', whiteSpace: 'nowrap' }}>
                   or continue with
                 </span>
                 <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-color)' }} />
@@ -384,8 +375,8 @@ export default function Auth({ onAuthSuccess }) {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '12px',
-                  fontSize: '0.8rem',
+                  gap: '10px',
+                  fontSize: '0.78rem',
                   fontWeight: '700',
                   color: 'var(--color-text-primary)',
                   cursor: 'pointer',
@@ -408,9 +399,8 @@ export default function Auth({ onAuthSuccess }) {
         </div>
       </div>
 
-      {/* Split Responsive Styling Injection */}
       <style>{`
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
           .auth-visual-panel {
             display: none !important;
           }
