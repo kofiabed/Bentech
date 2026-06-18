@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 export default function Auth({ onAuthSuccess }) {
   const [authMode, setAuthMode] = useState('login');
@@ -6,40 +7,62 @@ export default function Auth({ onAuthSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
-      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-      if (!clientId) return;
-      window.google?.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleCredentialResponse
-      });
-    };
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  const handleGoogleCredentialResponse = async (response) => {
-    setIsLoading(true);
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
     setErrorMessage('');
+    setIsLoading(true);
+
+    const emailLower = formData.email.toLowerCase();
+
     try {
-      const res = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: response.credential })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Google authentication failed.');
-      localStorage.setItem('token', data.token);
-      onAuthSuccess(data.user);
+      if (authMode === 'login') {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: emailLower,
+          password: formData.password
+        });
+
+        if (error) throw error;
+
+        localStorage.setItem('token', data.session.access_token);
+        
+        const response = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${data.session.access_token}` }
+        });
+        const profileData = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(profileData.message || 'Failed to sync session with backend.');
+        }
+
+        alert('Signed in successfully!');
+        onAuthSuccess(profileData.user);
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email: emailLower,
+          password: formData.password,
+          options: {
+            data: {
+              name: formData.name
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+          localStorage.setItem('token', data.session.access_token);
+          
+          const response = await fetch('/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${data.session.access_token}` }
+          });
+          const profileData = await response.json();
+          
+          alert('Account created and signed in!');
+          onAuthSuccess(profileData.user);
+        } else {
+          alert('Account created! Please check your email for confirmation instructions.');
+        }
+      }
     } catch (err) {
       setErrorMessage(err.message);
     } finally {
@@ -47,50 +70,31 @@ export default function Auth({ onAuthSuccess }) {
     }
   };
 
-  const triggerGoogleSocialAuth = () => {
-    if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
-      setErrorMessage('Google OAuth is not configured on the client.');
-      return;
-    }
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed()) {
-          setErrorMessage('Unable to show Google sign-in prompt. Please try again.');
+  const triggerGoogleSocialAuth = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
         }
       });
+      if (error) throw error;
+    } catch (err) {
+      setErrorMessage(err.message);
     }
   };
 
-  const handleFormSubmit = async (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
-
-    const emailLower = formData.email.toLowerCase();
-    const endpoint = authMode === 'login' ? 'login' : 'register';
-
     try {
-        const response = await fetch(`/api/auth/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: emailLower,
-          password: formData.password,
-          role: authMode === 'register' ? 'customer' : undefined
-        }),
+      const { error } = await supabase.auth.resetPasswordForEmail(formData.email.toLowerCase(), {
+        redirectTo: window.location.origin
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Authentication failed.');
-      }
-
-      localStorage.setItem('token', data.token);
-      alert(authMode === 'login' ? 'Signed in successfully!' : 'Account created!');
-      onAuthSuccess(data.user);
-
+      if (error) throw error;
+      alert("Reset link sent! Please check your email inbox.");
+      setAuthMode('login');
     } catch (err) {
       setErrorMessage(err.message);
     } finally {
@@ -323,7 +327,7 @@ export default function Auth({ onAuthSuccess }) {
             </form>
           ) : (
             <form
-              onSubmit={(e) => { e.preventDefault(); alert("Reset link sent."); setAuthMode('login'); }}
+              onSubmit={handleResetPassword}
               style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
               <h4 style={{ fontSize: '0.88rem', fontWeight: '800', marginBottom: '4px' }}>RESET YOUR PASSWORD</h4>
@@ -333,15 +337,23 @@ export default function Auth({ onAuthSuccess }) {
               
               <div className="form-group-premium">
                 <label className="form-label-premium">Email Address</label>
-                <input type="email" required placeholder="your-email@domain.com" className="form-input-premium" />
+                <input 
+                  type="email" 
+                  required 
+                  placeholder="your-email@domain.com" 
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  className="form-input-premium" 
+                  disabled={isLoading}
+                />
               </div>
 
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="button" onClick={() => setAuthMode('login')} className="btn btn-outline" style={{ flex: 1, padding: '12px' }}>
+                <button type="button" onClick={() => setAuthMode('login')} className="btn btn-outline" style={{ flex: 1, padding: '12px' }} disabled={isLoading}>
                   CANCEL
                 </button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 2, padding: '12px' }}>
-                  SEND LINK
+                <button type="submit" className="btn btn-primary" style={{ flex: 2, padding: '12px' }} disabled={isLoading}>
+                  {isLoading ? 'SENDING...' : 'SEND LINK'}
                 </button>
               </div>
             </form>

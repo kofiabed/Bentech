@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartItems, onCartCleared, user }) {
+export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartItems, onCartCleared, user, onCartChange }) {
   const [cart, setCart] = useState(cartItems || []);
   const [savedForLater, setSavedForLater] = useState([]);
   const [coupon, setCoupon] = useState('');
@@ -20,17 +20,27 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
   const [cardCvv, setCardCvv] = useState('');
 
   const updateQty = (id, amount) => {
-    setCart(prev => prev.map(item => {
-      if (item.id === id) {
-        const stockLimit = item.availableStock || item.stock || 999;
-        const newQty = item.qty + amount;
-        return newQty > 0 && newQty <= stockLimit ? { ...item, qty: newQty } : item;
-      }
-      return item;
-    }));
+    setCart(prev => {
+      const nextCart = prev.map(item => {
+        if (item.id === id) {
+          const stockLimit = item.availableStock || item.stock || 999;
+          const newQty = item.qty + amount;
+          return newQty > 0 && newQty <= stockLimit ? { ...item, qty: newQty } : item;
+        }
+        return item;
+      });
+      if (onCartChange) onCartChange(nextCart);
+      return nextCart;
+    });
   };
 
-  const removeItem = (id) => setCart(prev => prev.filter(item => item.id !== id));
+  const removeItem = (id) => {
+    setCart(prev => {
+      const nextCart = prev.filter(item => item.id !== id);
+      if (onCartChange) onCartChange(nextCart);
+      return nextCart;
+    });
+  };
 
   const handleSaveForLater = (item) => {
     removeItem(item.id);
@@ -39,7 +49,11 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
 
   const handleMoveToCart = (item) => {
     setSavedForLater(prev => prev.filter(i => i.id !== item.id));
-    setCart(prev => [...prev, { ...item, qty: 1 }]);
+    setCart(prev => {
+      const nextCart = [...prev, { ...item, qty: 1 }];
+      if (onCartChange) onCartChange(nextCart);
+      return nextCart;
+    });
   };
 
   const applyCoupon = (e) => {

@@ -1,11 +1,29 @@
-const User = require('../models/userModel');
+const supabase = require('../config/supabase');
 
 exports.getUsers = async (req, res, next) => {
   try {
     const { role } = req.query;
-    const filter = role ? { role } : {};
-    const users = await User.find(filter).select('-password').sort({ createdAt: -1 });
-    res.status(200).json({ success: true, users });
+    let queryBuilder = supabase.from('profiles').select('*');
+    if (role) {
+      queryBuilder = queryBuilder.eq('role', role);
+    }
+    const { data: users, error } = await queryBuilder.order('created_at', { ascending: false });
+    if (error) throw error;
+
+    // Adapt fields to match MongoDB format
+    const adaptedUsers = users.map(user => ({
+      _id: user.id,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      image: user.image,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at
+    }));
+
+    res.status(200).json({ success: true, users: adaptedUsers });
   } catch (error) {
     next(error);
   }
@@ -19,16 +37,33 @@ exports.createUser = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid user role.' });
     }
 
-    const user = await User.create({ name, email, password, role, phone });
+    // Call Supabase admin auth API to create user
+    const { data: { user }, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { name, role }
+    });
+
+    if (error) throw error;
+
+    // Also update phone in profiles
+    const { data: profile } = await supabase
+      .from('profiles')
+      .update({ phone })
+      .eq('id', user.id)
+      .select()
+      .single();
+
     res.status(201).json({
       success: true,
       user: {
-        id: user._id,
-        name: user.name,
+        id: user.id,
+        name: profile ? profile.name : name,
         email: user.email,
-        role: user.role,
-        phone: user.phone,
-        image: user.image
+        role: profile ? profile.role : role,
+        phone: profile ? profile.phone : phone,
+        image: profile ? profile.image : null
       }
     });
   } catch (error) {
@@ -39,33 +74,65 @@ exports.createUser = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   try {
     const { name, email, password, role, phone, image } = req.body;
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id;
 
-    if (!user) {
+    // Fetch user profile first
+    const { data: profile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (fetchError || !profile) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    if (req.user._id.toString() === user._id.toString() && role && role !== user.role) {
+    if (req.user.id === userId && role && role !== profile.role) {
       return res.status(403).json({ success: false, message: 'You cannot change your own role.' });
     }
 
-    if (name) user.name = name;
-    if (email) user.email = email.toLowerCase();
-    if (password) user.password = password;
-    if (role) user.role = role;
-    if (phone !== undefined) user.phone = phone;
-    if (image !== undefined) user.image = image;
+    // Update Auth.users properties if password/email/metadata changes
+    const authUpdate = {};
+    if (email) authUpdate.email = email.toLowerCase();
+    if (password) authUpdate.password = password;
+    if (name || role) {
+      authUpdate.user_metadata = {
+        name: name || profile.name,
+        role: role || profile.role
+      };
+    }
 
-    const updatedUser = await user.save();
+    if (Object.keys(authUpdate).length > 0) {
+      const { error: authError } = await supabase.auth.admin.updateUserById(userId, authUpdate);
+      if (authError) throw authError;
+    }
+
+    // Update Profiles properties
+    const profileUpdate = {};
+    if (name) profileUpdate.name = name;
+    if (email) profileUpdate.email = email.toLowerCase();
+    if (role) profileUpdate.role = role;
+    if (phone !== undefined) profileUpdate.phone = phone;
+    if (image !== undefined) profileUpdate.image = image;
+
+    const { data: updatedProfile, error: profileError } = await supabase
+      .from('profiles')
+      .update(profileUpdate)
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (profileError) throw profileError;
+
     res.status(200).json({
       success: true,
       user: {
-        id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        phone: updatedUser.phone,
-        image: updatedUser.image
+        id: updatedProfile.id,
+        name: updatedProfile.name,
+        email: updatedProfile.email,
+        role: updatedProfile.role,
+        phone: updatedProfile.phone,
+        image: updatedProfile.image
       }
     });
   } catch (error) {
@@ -75,17 +142,16 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id;
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
-    }
-
-    if (req.user._id.toString() === user._id.toString()) {
+    if (req.user.id === userId) {
       return res.status(400).json({ success: false, message: 'You cannot delete your own account.' });
     }
 
-    await User.findByIdAndDelete(req.params.id);
+    // Call Supabase admin to delete user (will cascade delete their profile)
+    const { error } = await supabase.auth.admin.deleteUser(userId);
+    if (error) throw error;
+
     res.status(200).json({ success: true, message: 'User deleted successfully.' });
   } catch (error) {
     next(error);

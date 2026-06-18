@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 const MOCK_WISHLIST = [
   { id: 3, name: "Quantum Smart Watch V2", price: 750, img: "⌚" },
@@ -13,7 +14,7 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
     phone: user?.phone || '',
     image: user?.image || null
   });
-  const [imagePreview, setImagePreview] = useState(user?.image?.startsWith?.('data:image') ? user.image : null);
+  const [imagePreview, setImagePreview] = useState(user?.image || null);
   const [isSaving, setIsSaving] = useState(false);
   const [addresses] = useState([
     { id: 1, type: 'Home / Primary Terminal', street: '12 Ring Road Central', city: 'Accra', current: true },
@@ -25,19 +26,39 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
   const [reviewForm, setReviewForm] = useState({ rating: '5', text: '', product: 'General Shopping Experience' });
   const [reviewMessage, setReviewMessage] = useState('');
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       alert('Please select a valid image file (PNG, JPG, GIF, etc.)');
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-      setFormData(prev => ({ ...prev, image: reader.result }));
-    };
-    reader.readAsDataURL(file);
+
+    setIsSaving(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `public/${fileName}`;
+
+      // Upload file directly to Supabase storage avatars bucket
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get clean public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setImagePreview(publicUrl);
+      setFormData(prev => ({ ...prev, image: publicUrl }));
+    } catch (err) {
+      alert('Avatar upload failed: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const clearImage = () => {
@@ -70,20 +91,24 @@ export default function Dashboard({ user, wishlist = [], onToggleWishlist, onIte
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    const loadOrders = () => {
-      if (!cancelled) {
-        fetchOrders().catch(error => setOrderMessage(error.message));
-      }
-    };
-    const timeout = setTimeout(loadOrders, 0);
-    const interval = setInterval(loadOrders, 15000);
+    fetchOrders().catch(error => setOrderMessage(error.message));
+
+    // Listen to changes to this user's orders table in real-time
+    const channel = supabase
+      .channel(`user-orders-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` },
+        () => {
+          fetchOrders().catch(error => setOrderMessage(error.message));
+        }
+      )
+      .subscribe();
+
     return () => {
-      cancelled = true;
-      clearTimeout(timeout);
-      clearInterval(interval);
+      supabase.removeChannel(channel);
     };
-  }, [fetchOrders]);
+  }, [user.id, fetchOrders]);
 
   useEffect(() => {
     let cancelled = false;

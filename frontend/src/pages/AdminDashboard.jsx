@@ -140,7 +140,12 @@ export default function AdminDashboard() {
   const customers = users.filter(user => user.role === 'customer');
   const flashProducts = products.filter(product => product.tag === 'Flash Sale');
   const lowStockProducts = products.filter(product => product.stock <= 5);
-  const totalRevenue = orders.reduce((sum, order) => sum + Number(order.financials?.grandTotal || 0), 0);
+  const totalRevenue = orders
+    .filter(order => order.paymentStatus === 'paid' || order.paymentMethod === 'cod')
+    .reduce((sum, order) => sum + Number(order.financials?.grandTotal || 0), 0);
+  const pendingRevenue = orders
+    .filter(order => (order.paymentMethod === 'card' || order.paymentMethod === 'momo') && order.paymentStatus === 'pending')
+    .reduce((sum, order) => sum + Number(order.financials?.grandTotal || 0), 0);
   const totalItemsSold = orders.reduce((sum, order) => sum + order.items.reduce((itemSum, item) => itemSum + Number(item.qty || 0), 0), 0);
 
   const resetProductForm = () => {
@@ -706,6 +711,48 @@ export default function AdminDashboard() {
     return (
       <div className="animate-fade-in">
         <h3 style={panelTitleStyle}>System Health & Telemetry</h3>
+
+        {/* Critical Stock Warning Alert Block */}
+        {lowStockProducts.length > 0 && (
+          <div style={{
+            backgroundColor: 'rgba(198, 40, 40, 0.04)',
+            border: '1px solid rgba(198, 40, 40, 0.15)',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            marginBottom: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#c62828' }}>
+              <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+              <strong style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CRITICAL STOCK WARNING</strong>
+            </div>
+            <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', margin: '0 0 8px 0' }}>
+              The following products are running below the safe stock threshold (5 items):
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {lowStockProducts.map(p => (
+                <div key={getProductId(p)} style={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid rgba(198, 40, 40, 0.2)',
+                  borderRadius: '6px',
+                  padding: '6px 12px',
+                  fontSize: '0.72rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontWeight: '700',
+                  color: '#c62828'
+                }}>
+                  <span>{p.img || '📦'}</span>
+                  <span>{p.name}</span>
+                  <span style={{ backgroundColor: '#fff1f2', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem' }}>{p.stock} left</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* Metric Cards Grid */}
         <div className="admin-metric-cards" style={{
@@ -714,7 +761,8 @@ export default function AdminDashboard() {
           gap: '16px',
           marginBottom: '24px'
         }}>
-          <MetricCard label="Total Revenue" value={`GHS ${totalRevenue.toLocaleString()}`} detail={`${orders.length} orders settled`} color="#3e0a36" />
+          <MetricCard label="Settled Revenue" value={`GHS ${totalRevenue.toLocaleString()}`} detail={`${orders.filter(order => order.paymentStatus === 'paid' || order.paymentMethod === 'cod').length} paid/COD orders`} color="#3e0a36" />
+          <MetricCard label="Pending Revenue" value={`GHS ${pendingRevenue.toLocaleString()}`} detail={`${orders.filter(order => (order.paymentMethod === 'card' || order.paymentMethod === 'momo') && order.paymentStatus === 'pending').length} verification pending`} color="#ff9800" />
           <MetricCard label="Catalog Products" value={products.length} detail={`${flashProducts.length} live flash sales`} color="#2d0727" />
           <MetricCard label="Items Sold" value={totalItemsSold} detail={`${lowStockProducts.length} low stock alerts`} color="#2e7d32" />
           <MetricCard label="Operators Registered" value={users.length} detail={`${staff.length} staff, ${customers.length} users`} color="#c62828" />

@@ -1,5 +1,4 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+const supabase = require('../config/supabase');
 
 // Verification gatekeeper for logged-in sessions
 const protect = async (req, res, next) => {
@@ -7,9 +6,42 @@ const protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_node_key_3000');
       
-      req.user = await User.findById(decoded.id).select('-password');
+      // Call Supabase auth to verify and get user
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      
+      if (error || !user) {
+        return res.status(401).json({ success: false, message: 'Not authorized, token validation failed' });
+      }
+
+      // Fetch user profile from public.profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
+      if (profileError || !profile) {
+        // Fallback/Create profile or return error. Usually the trigger handles profile creation
+        req.user = {
+          _id: user.id,
+          id: user.id,
+          email: user.email,
+          name: user.user_metadata?.name || user.email.split('@')[0],
+          role: user.user_metadata?.role || 'customer'
+        };
+      } else {
+        req.user = {
+          _id: profile.id,
+          id: profile.id,
+          email: profile.email,
+          name: profile.name,
+          role: profile.role,
+          phone: profile.phone,
+          image: profile.image
+        };
+      }
+      
       return next();
     } catch (error) {
       return res.status(401).json({ success: false, message: 'Not authorized, token validation failed' });
@@ -33,4 +65,4 @@ const authorizeRoles = (...roles) => {
   };
 };
 
-module.exports = { protect, authorizeRoles };
+module.exports = { protect, authorizeRoles };

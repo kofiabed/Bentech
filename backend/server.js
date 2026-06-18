@@ -2,13 +2,8 @@
 // BEN-TECHNOVA-GHANA BACKEND SERVER ENGINE
 // ==========================================
 
-const dns = require('dns');
-dns.setServers(['8.8.8.8', '8.8.4.4']); // Fix DNS resolution for MongoDB Atlas SRV records
-
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 // Initialize the Express Application
@@ -54,34 +49,34 @@ app.use(cors({
   credentials: true
 }));
 
-// 2. Built-in Body Parsers (Replaces old body-parser packages)
-app.use(express.json({ limit: '25mb' })); // Parses incoming JSON application payloads
+// 2. Built-in Body Parsers
+app.use(express.json({ limit: '25mb' })); // Parses incoming JSON payloads
 app.use(express.urlencoded({ extended: true, limit: '25mb' })); // Parses URL-encoded form data
 
 // ==========================================
 // DATABASE CONNECTION & SEED CONFIGURATION
 // ==========================================
-const MONGO_URI = 'mongodb://127.0.0.1:27017/ben_technova_ghana';
-const User = require('./models/userModel'); // 💡 SECURE REQUIRE: Hooks user schema parameters
-const Product = require('./models/productModel');
+const supabase = require('./config/supabase');
 
-mongoose.connect(MONGO_URI)
-  .then(async () => {
-    console.log('🚀 Database layer synchronized and connected successfully.');
+const seedDatabase = async () => {
+  try {
+    console.log('🚀 Database layer synchronization and connection verified.');
     
-    try {
-      await User.deleteOne({ email: 'admin@technova.gh' });
-      await User.deleteOne({ email: 'ben@technova.gh' });
-      console.log('🗑️ Old admin users removed.');
+    // Check if products already exist
+    const { data: existingProducts, error: fetchErr } = await supabase
+      .from('products')
+      .select('id')
+      .limit(1);
 
-      // Clear old products to ensure fresh seeding matches expanded catalog
-      await Product.deleteMany({});
+    if (fetchErr) throw fetchErr;
+
+    if (!existingProducts || existingProducts.length === 0) {
       console.log('🌱 Seeding expanded premium products into database...');
-      await Product.insertMany([
+      const { error: seedErr } = await supabase.from('products').insert([
         {
           name: "HP ProBook 450 G10",
           price: 9500,
-          oldPrice: 11000,
+          old_price: 11000,
           category: "Laptops",
           tag: "Best Seller",
           brand: "HP",
@@ -94,7 +89,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Apple MacBook Air M3",
           price: 14500,
-          oldPrice: 16000,
+          old_price: 16000,
           category: "Laptops",
           tag: "Featured",
           brand: "Apple",
@@ -107,7 +102,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Samsung Galaxy S24 Ultra",
           price: 13800,
-          oldPrice: 15000,
+          old_price: 15000,
           category: "Smartphones",
           tag: "Flash Sale",
           brand: "Samsung",
@@ -120,7 +115,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "iPhone 15 Pro Max",
           price: 14200,
-          oldPrice: 15500,
+          old_price: 15500,
           category: "Smartphones",
           tag: "Best Seller",
           brand: "Apple",
@@ -133,7 +128,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Sony WH-1000XM5",
           price: 4200,
-          oldPrice: 4800,
+          old_price: 4800,
           category: "Audio & Sound",
           tag: "Featured",
           brand: "Sony",
@@ -146,7 +141,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Apple AirPods Pro Gen 2",
           price: 2600,
-          oldPrice: 3000,
+          old_price: 3000,
           category: "Audio & Sound",
           tag: "Flash Sale",
           brand: "Apple",
@@ -159,7 +154,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Quantum Smart Watch V2",
           price: 750,
-          oldPrice: 950,
+          old_price: 950,
           category: "Wearables",
           tag: "Featured",
           brand: "Quantum",
@@ -172,7 +167,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Sony PlayStation 5 Slim",
           price: 6800,
-          oldPrice: 7500,
+          old_price: 7500,
           category: "Gaming",
           tag: "Best Seller",
           brand: "Sony",
@@ -185,7 +180,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Logitech MX Master 3S",
           price: 1200,
-          oldPrice: 1400,
+          old_price: 1400,
           category: "Accessories",
           tag: "Featured",
           brand: "Logitech",
@@ -198,7 +193,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Nintendo Switch OLED Model",
           price: 3900,
-          oldPrice: 4500,
+          old_price: 4500,
           category: "Gaming",
           tag: "Best Seller",
           brand: "Nintendo",
@@ -211,7 +206,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Apple Watch Ultra 2",
           price: 9800,
-          oldPrice: 11000,
+          old_price: 11000,
           category: "Wearables",
           tag: "Featured",
           brand: "Apple",
@@ -224,7 +219,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Dell XPS 15 9530",
           price: 18500,
-          oldPrice: 21000,
+          old_price: 21000,
           category: "Laptops",
           tag: "Featured",
           brand: "Dell",
@@ -237,7 +232,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Bose QuietComfort Ultra",
           price: 4900,
-          oldPrice: 5500,
+          old_price: 5500,
           category: "Audio & Sound",
           tag: "New Arrival",
           brand: "Bose",
@@ -250,7 +245,7 @@ mongoose.connect(MONGO_URI)
         {
           name: "Google Pixel 8 Pro",
           price: 9200,
-          oldPrice: 10500,
+          old_price: 10500,
           category: "Smartphones",
           tag: "New Arrival",
           brand: "Google",
@@ -261,60 +256,59 @@ mongoose.connect(MONGO_URI)
           specs: { Processor: "Google Tensor G3", Screen: "6.7-inch Super Actua", Storage: "128GB", Camera: "50MP Triple System" }
         }
       ]);
+
+      if (seedErr) throw seedErr;
       console.log('✅ Expanded premium products seeded successfully.');
-
-      // Ensure all existing product images are updated to real assets
-      await Product.updateOne({ name: "HP ProBook 450 G10" }, { img: "/hp_probook.png" });
-      await Product.updateOne({ name: "Apple MacBook Air M3" }, { img: "/macbook_air.png" });
-      await Product.updateOne({ name: "Samsung Galaxy S24 Ultra" }, { img: "/s24_ultra.png" });
-      await Product.updateOne({ name: "iPhone 15 Pro Max" }, { img: "/iphone_15.png" });
-      await Product.updateOne({ name: "Sony WH-1000XM5" }, { img: "/sony_headphones.png" });
-      await Product.updateOne({ name: "Apple AirPods Pro Gen 2" }, { img: "/airpods_pro.png" });
-      await Product.updateOne({ name: "Quantum Smart Watch V2" }, { img: "/quantum_watch.png" });
-      await Product.updateOne({ name: "Sony PlayStation 5 Slim" }, { img: "/playstation_5.png" });
-      await Product.updateOne({ name: "Logitech MX Master 3S" }, { img: "/logitech_mouse.png" });
-      await Product.updateOne({ name: "Nintendo Switch OLED Model" }, { img: "/nintendo_switch.png" });
-      await Product.updateOne({ name: "Apple Watch Ultra 2" }, { img: "/apple_watch_ultra.png" });
-      await Product.updateOne({ name: "Dell XPS 15 9530" }, { img: "/dell_xps.png" });
-      await Product.updateOne({ name: "Bose QuietComfort Ultra" }, { img: "/bose_headphones.png" });
-      await Product.updateOne({ name: "Google Pixel 8 Pro" }, { img: "/pixel_8_pro.png" });
-      
-      const adminExists = await User.findOne({ email: 'ben@technova.gh' }).select('+password');
-      
-      if (!adminExists) {
-        console.log('🌱 Seeding administrative supervisor account into database...');
-        await User.create({
-          name: "Bernard Ofori",
-          email: "ben@technova.gh",
-          password: "Bentech@12",
-          role: "admin"
-        });
-        console.log('✅ Admin seed complete. Node parameters persistent.');
-      } else {
-        console.log('🛡️ Security Registry: Admin structural node validated on boot.');
-        if (!adminExists.password || !adminExists.password.startsWith('$2')) {
-          console.log('🔑 Re-hashing plain text admin password...');
-          const hashedPassword = await bcrypt.hash('Bentech@12', 12);
-          await User.findByIdAndUpdate(adminExists._id, { password: hashedPassword });
-          console.log('✅ Admin password re-hashed successfully.');
-        }
-      }
-    } catch (seedErr) {
-      console.error('⚠️ Auto-seed engine caught an exception:', seedErr.message);
+    } else {
+      console.log('🛡️ Products seeding skipped: catalog table already populated.');
     }
-  })
-  .catch((err) => console.error('❌ Critical Error: Database connection failed ->', err.message));
+    
+    // Check if administrative supervisor account exists
+    const { data: adminExists, error: adminFetchErr } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', 'ben@technova.gh');
 
-// Handle runtime database connection disruptions gracefully
-mongoose.connection.on('error', err => {
-  console.error('⚠️ Runtime database connection exception raised:', err);
-});
+    if (adminFetchErr) throw adminFetchErr;
+
+    if (!adminExists || adminExists.length === 0) {
+      console.log('🌱 Seeding administrative supervisor account into database...');
+      const { data: adminUser, error: adminCreateErr } = await supabase.auth.admin.createUser({
+        email: "ben@technova.gh",
+        password: "Bentech@12",
+        email_confirm: true,
+        user_metadata: {
+          name: "Bernard Ofori",
+          role: "admin"
+        }
+      });
+
+      if (adminCreateErr) throw adminCreateErr;
+
+      // Update their profile role to admin explicitly
+      const { error: profileErr } = await supabase
+        .from('profiles')
+        .update({ role: 'admin', name: "Bernard Ofori" })
+        .eq('id', adminUser.user.id);
+
+      if (profileErr) throw profileErr;
+      console.log('✅ Admin seed complete. Node parameters persistent.');
+    } else {
+      console.log('🛡️ Security Registry: Admin structural node validated on boot.');
+    }
+
+  } catch (err) {
+    console.error('⚠️ Auto-seed engine caught an exception:', err.message);
+  }
+};
+
+seedDatabase();
 
 // ==========================================
 // API ENDPOINTS & ROUTING ARRAYS
 // ==========================================
 
-// Basic System Health / Pulse Check Route
+// Basic System Health Check Route
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: "Healthy",
@@ -335,7 +329,7 @@ app.use('/api/payment', require('./routes/paymentRoutes'));
 // ACCESSIBLE GLOBAL ERROR HANDLING WARE
 // ==========================================
 
-// 404 Route Fallback Handler (If a requested endpoint doesn't exist)
+// 404 Route Fallback Handler
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
@@ -349,7 +343,6 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     success: false,
     message: err.message || "Internal Server Runtime Exception",
-    // Only expose full stack debug arrays while running inside development mode
     error: process.env.NODE_ENV === 'development' ? err.stack : {}
   });
 });

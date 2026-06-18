@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import CartCheckout from './pages/CartCheckout';
@@ -9,6 +10,7 @@ import Auth from './pages/Auth';
 import SuccessPage from './pages/SuccessPage';
 import Layout from './components/Layout';
 import StaticPages from './pages/StaticPages';
+import ResetPassword from './pages/ResetPassword';
 
 
 export default function App() {
@@ -41,26 +43,113 @@ export default function App() {
   };
 
   useEffect(() => {
-    const checkLoggedUser = async () => {
-      const savedToken = localStorage.getItem('token');
-      if (!savedToken) return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setCurrentPage('reset-password');
+        return;
+      }
+      
+      if (session) {
+        localStorage.setItem('token', session.access_token);
+        try {
+          const response = await fetch('/api/auth/me', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${session.access_token}` }
+          });
+          const data = await response.json();
+          if (response.ok) {
+            setUser(data.user);
+          } else {
+            localStorage.removeItem('token');
+            setUser(null);
+          }
+        } catch (err) {
+          console.error("Session recovery error:", err);
+        }
+      } else {
+        localStorage.removeItem('token');
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Sync React cartItems state with Supabase cart_items table in database
+  useEffect(() => {
+    const syncCart = async () => {
+      if (!user) return;
       try {
-        const response = await fetch('/api/auth/me', {
-          method: 'GET',
-          headers: { 'Authorization': `Bearer ${savedToken}` }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setUser(data.user);
-        } else {
-          localStorage.removeItem('token');
+        const { data: dbCart, error } = await supabase
+          .from('cart_items')
+          .select('*')
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+        
+        // Upsert all React cartItems to Supabase
+        for (const item of cartItems) {
+          const prodId = item._id || item.id;
+          await supabase
+            .from('cart_items')
+            .upsert({
+              user_id: user.id,
+              product_id: prodId,
+              qty: item.qty
+            }, { onConflict: 'user_id,product_id' });
+        }
+        
+        // Delete items from database that are no longer in React cart
+        const reactIds = cartItems.map(i => i._id || i.id);
+        const dbItemsToDelete = dbCart.filter(i => !reactIds.includes(i.product_id));
+        
+        for (const i of dbItemsToDelete) {
+          await supabase
+            .from('cart_items')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('product_id', i.product_id);
         }
       } catch (err) {
-        console.error("Session recovery error:", err);
+        console.error("Cart synchronization error:", err);
       }
     };
-    checkLoggedUser();
-  }, []);
+    syncCart();
+  }, [cartItems, user]);
+
+  // Load user cart items on session start / login
+  useEffect(() => {
+    const loadCart = async () => {
+      if (!user) return;
+      try {
+        const { data: dbCart, error } = await supabase
+          .from('cart_items')
+          .select(`
+            qty,
+            product:products (*)
+          `)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+        
+        if (dbCart && dbCart.length > 0) {
+          const loadedItems = dbCart
+            .filter(item => item.product !== null)
+            .map(item => ({
+              ...item.product,
+              qty: item.qty,
+              id: item.product.id
+            }));
+          setCartItems(loadedItems);
+        }
+      } catch (err) {
+        console.error("Error loading cart from database:", err);
+      }
+    };
+    loadCart();
+  }, [user]);
 
   const paymentReference = useMemo(() => {
     if (typeof window === 'undefined') return null;
@@ -96,7 +185,8 @@ export default function App() {
     navigateTo('home');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     setCartItems([]);
     localStorage.removeItem('token');
@@ -116,8 +206,9 @@ export default function App() {
       {renderedPage === 'home' && <Home onItemAdd={handleAddToCart} onNavigate={navigateTo} user={user} />}
       {renderedPage === 'catalog' && <Catalog onItemAdd={handleAddToCart} initialCategory={initialCategory} initialSearch={initialSearch} wishlist={wishlist} onToggleWishlist={handleToggleWishlist} />}
       {renderedPage === 'auth' && <Auth onAuthSuccess={handleAuthSuccess} />}
-      {renderedPage === 'cart' && <CartCheckout isUserLoggedIn={!!user} onRedirectToLogin={() => navigateTo('auth')} cartItems={cartItems} onCartCleared={handleClearCart} user={user} />}
+      {renderedPage === 'cart' && <CartCheckout isUserLoggedIn={!!user} onRedirectToLogin={() => navigateTo('auth')} cartItems={cartItems} onCartCleared={handleClearCart} user={user} onCartChange={setCartItems} />}
       {renderedPage === 'success' && <SuccessPage onNavigate={navigateTo} onClearCart={handleClearCart} />}
+      {renderedPage === 'reset-password' && <ResetPassword onRedirectToLogin={() => navigateTo('auth')} />}
       {renderedPage === 'dashboard' && (
         !user ? <Auth onAuthSuccess={handleAuthSuccess} /> : user.role === 'admin' ? <AdminDashboard /> : user.role === 'staff' ? <StaffDashboard /> : <Dashboard user={user} wishlist={wishlist} onToggleWishlist={handleToggleWishlist} onItemAdd={handleAddToCart} />
       )}
