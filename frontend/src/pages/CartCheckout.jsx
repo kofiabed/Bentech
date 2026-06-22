@@ -247,7 +247,7 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                         overflow: 'hidden',
                         border: '1px solid var(--border-color)'
                       }}>
-                        {item.img && item.img.startsWith('data:image') ? (
+                        {item.img && (item.img.startsWith('/') || item.img.startsWith('http') || item.img.startsWith('data:image')) ? (
                           <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                         ) : (
                           <span style={{ fontSize: '1.8rem' }}>{item.img || '📦'}</span>
@@ -669,7 +669,7 @@ export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartIt
                           border: '1px solid var(--border-color)',
                           flexShrink: 0
                         }}>
-                          {item.img && item.img.startsWith('data:image') ? (
+                          {item.img && (item.img.startsWith('/') || item.img.startsWith('http') || item.img.startsWith('data:image')) ? (
                             <img src={item.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                           ) : (
                             <span style={{ fontSize: '1.1rem' }}>{item.img || '📦'}</span>
