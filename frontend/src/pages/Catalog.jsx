@@ -480,7 +480,7 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
         <Modal onClose={() => setActiveProductDetails(null)}>
           <div style={{ padding: 'clamp(16px, 4vw, 40px)', display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'clamp(16px, 4vw, 40px)', alignItems: 'start' }} className="modal-columns-responsive">
             
-            {/* Left Image column */}
+{/* Left Image column */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{
                 width: '100%',
@@ -494,14 +494,12 @@ export default function Catalog({ onItemAdd, initialCategory, initialSearch, wis
                 overflow: 'hidden',
                 padding: '16px'
               }}>
-                {activeProductDetails.img && activeProductDetails.img.startsWith('/') ? (
-                  <img src={activeProductDetails.img} alt={activeProductDetails.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                ) : activeProductDetails.img && activeProductDetails.img.startsWith('data:image') ? (
-                  <img src={activeProductDetails.img} alt={activeProductDetails.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                {activeProductDetails.img && (activeProductDetails.img.startsWith('/') || activeProductDetails.img.startsWith('http') || activeProductDetails.img.startsWith('https') || activeProductDetails.img.startsWith('data:image')) ? (
+                  <img src={activeProductDetails.img} alt={activeProductDetails.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
                 ) : (
                   <span style={{ fontSize: 'clamp(3rem, 8vw, 5rem)' }}>{activeProductDetails.img || '📦'}</span>
                 )}
-              </div>
+             </div>
             </div>
 
             {/* Right Information column */}

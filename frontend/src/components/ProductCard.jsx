@@ -11,10 +11,10 @@ export default function ProductCard({ product, onAdd, onClick }) {
   };
 
   return (
-    <div className="product-card" onClick={onClick}>
+<div className="product-card" onClick={onClick}>
       <div className="product-card-img-wrap">
-        {product.img && (product.img.startsWith('/') || product.img.startsWith('http') || product.img.startsWith('data:image')) ? (
-          <img src={product.img} alt={product.name} className="product-card-img" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }} />
+        {product.img && (product.img.startsWith('/') || product.img.startsWith('http') || product.img.startsWith('https') || product.img.startsWith('data:image')) ? (
+          <img src={product.img} alt={product.name} className="product-card-img" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }} onError={(e) => { e.target.style.display = 'none'; }} />
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', backgroundColor: '#f3f4f6' }}>
             <span style={{ fontSize: '2.5rem' }}>{product.img || '📦'}</span>
