@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function CartCheckout({ isUserLoggedIn, onRedirectToLogin, cartItems, onCartCleared, user, onCartChange }) {
   const [cart, setCart] = useState(cartItems || []);
+
+  // Keep local cart in sync with parent cartItems prop
+  useEffect(() => {
+    if (cartItems) {
+      setCart(cartItems);
+    }
+  }, [cartItems]);
   const [savedForLater, setSavedForLater] = useState([]);
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);

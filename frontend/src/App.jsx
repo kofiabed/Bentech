@@ -32,11 +32,17 @@ export default function App() {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
+  const isSameProduct = (a, b) => {
+    if (a._id && b._id && a._id === b._id) return true;
+    if (a.id && b.id && a.id === b.id) return true;
+    return false;
+  };
+
   const handleToggleWishlist = (product) => {
     setWishlist(prev => {
-      const exists = prev.some(item => item._id === product._id || item.id === product.id);
+      const exists = prev.some(item => isSameProduct(item, product));
       if (exists) {
-        return prev.filter(item => item._id !== product._id && item.id !== product.id);
+        return prev.filter(item => !isSameProduct(item, product));
       }
       return [...prev, { ...product, id: product._id || product.id }];
     });
@@ -158,12 +164,13 @@ export default function App() {
 
   const renderedPage = paymentReference ? 'success' : currentPage;
 
+
   const handleAddToCart = (product) => {
     setCartItems(prev => {
-      const existing = prev.find(item => item._id === product._id || item.id === product.id);
+      const existing = prev.find(item => isSameProduct(item, product));
       if (existing) {
         return prev.map(item =>
-          (item._id === product._id || item.id === product.id)
+          isSameProduct(item, product)
             ? { ...item, qty: item.qty + 1 } : item
         );
       }
